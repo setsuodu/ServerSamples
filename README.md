@@ -8,12 +8,18 @@
 - Host on Kubernetes
 
 > 第一类：平台解决方案
-- Google Agones
-	- pros: open source, scaling, globally, Kubernetes
-	- cons: Kubernetes learning cost
-	- 费用在于养具有“容器化技术经验”的工程师（成为Edgegap等“开盒即用”派的攻击点）
 - Unity Game Services / Multiplay
 	- cons: price
+- Google Agones
+	- pros: open source, scaling, globally, Kubernetes
+	- cons: Kubernetes, learning cost
+	- 费用在于养具有“容器化技术经验”的工程师（成为Edgegap等“开盒即用”派的攻击点）
+- Google Open Match
+	- https://github.com/googleforgames/open-match
+	- an open-source game matchmaking framework
+	- pros: Extensibility, Flexibility, Scalability
+	- cons: write by GO, Kubernetes, learning cost
+- Microsoft Playfab
 - Amazon Gamelift
 	- cons: price
 - Nakama
@@ -50,7 +56,7 @@
 - Master Server Kit(unity)
 	- pros: instance architect, dashboard
 	- cons: port connect bug
-- Match Up(c++ lib)
+- Noble Whale - Match Up(c++ lib)
 - pomelo(node.js)
 - Hathora(next.js)
 

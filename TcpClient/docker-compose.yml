@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+
+    linux-server:
+        image: linux-server
+        restart: always
+        ports:
+          - 3000:3000
+        environment:
+        volumes:
+          - /www/wwwroot/admin/Linux-Server/server:/var/src/server #左边Ubuntu路径:右边Container路径
+        
+    db:
+        image: mysql:8.0
+        restart: always
+        environment:
+          MYSQL_DATABASE: exampledb //数据库信息要一致↑
+          MYSQL_USER: exampleuser
+          MYSQL_PASSWORD: examplepass
+          MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        volumes:
+          - /www/wwwroot/admin/Linux-Server/db:/var/lib/mysql //目录映射（docker文件夹:主机文件夹）
+
+volumes:
+  server:
+  db:
