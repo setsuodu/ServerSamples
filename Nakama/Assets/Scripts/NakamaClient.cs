@@ -1,39 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Nakama;
 using System;
+using UnityEngine;
+using UnityEngine.UI;
+using Nakama;
 
 public class NakamaClient : MonoBehaviour
 {
     private readonly IClient client;
-    const string email = "hello@example.com";
-    const string password = "123456";
 
-    async void Start()
+    public string scheme = "http";
+    public string host = "192.168.1.106";
+    public int port = 7351;
+    public string serverKey = "defaultkey";
+
+    public string email = "hello@example.com";
+    public string username = "hello";
+    public string password = "12345678";
+
+    public Button btn_CreateUserByEmail;
+    public Button btn_CreateUserByDevice;
+
+    void Awake()
     {
-        //var session = await client.AuthenticateEmailAsync(email, password);
-        //Debug.Log(session);
+        btn_CreateUserByEmail.onClick.AddListener(CreateUserByEmail);
+        btn_CreateUserByDevice.onClick.AddListener(CreateUserByDevice);
+    }
 
-        const string scheme = "http";
-        const string host = "127.0.0.1";
-        const int port = 7350;
-        const string serverKey = "defaultkey";
+    async void CreateUserByEmail()
+    {
         var client = new Client(scheme, host, port, serverKey);
-        var deviceId = SystemInfo.deviceUniqueIdentifier;
-        try 
+        try
         {
-            var session = await client.AuthenticateDeviceAsync(deviceId);
+            var session = await client.AuthenticateEmailAsync(email, password, username, true);
             Debug.Log(session);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.ToString());
         }
     }
 
-    void Update()
+    async void CreateUserByDevice()
     {
-        
+        var client = new Client(scheme, host, port, serverKey);
+        var deviceId = SystemInfo.deviceUniqueIdentifier;
+        try
+        {
+            var session = await client.AuthenticateDeviceAsync(deviceId, username, true);
+            Debug.Log(session);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
+        }
     }
 }

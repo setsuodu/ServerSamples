@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.heroiclabs.nakama-unity": {
+      "version": "file:Nakama",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      }
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 2,
