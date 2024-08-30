@@ -7,6 +7,8 @@ public class Web : MonoBehaviour
 {
     WebServer ws = null;
 
+    //string url = "http://localhost:8080/"; //外网不支持访问
+    string url = "http://*:8080/";
     static string wwwFolder;
 
     void Start()
@@ -14,7 +16,7 @@ public class Web : MonoBehaviour
         wwwFolder = Path.Combine(Environment.CurrentDirectory, "www");
         //Debug.Log(wwwFolder);
 
-        ws = new WebServer(SendResponse, "http://localhost:8080/");
+        ws = new WebServer(SendResponse, url);
         ws.Run();
     }
 
