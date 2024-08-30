@@ -13,8 +13,9 @@ public class Web : MonoBehaviour
 
     void Start()
     {
-        wwwFolder = Path.Combine(Environment.CurrentDirectory, "www");
-        //Debug.Log(wwwFolder);
+        //wwwFolder = Path.Combine(Environment.CurrentDirectory, "www");
+        wwwFolder = Path.Combine(Application.streamingAssetsPath, "www");
+        Debug.Log(wwwFolder);
 
         ws = new WebServer(SendResponse, url);
         ws.Run();
@@ -27,10 +28,11 @@ public class Web : MonoBehaviour
 
     public static string SendResponse(HttpListenerRequest request)
     {
-        //string htmlPath = Path.Combine(wwwFolder, "index.html");
-        //string htmlContent = File.ReadAllText(htmlPath);
-        //return htmlContent;
-        string html = $"<HTML><BODY>My web page.<br>{DateTime.Now}   <p><input type='submit' value='按钮'></BODY></HTML>";
-        return html;
+        string htmlPath = Path.Combine(wwwFolder, "index.html");
+        string htmlContent = File.ReadAllText(htmlPath);
+        Debug.Log(htmlContent);
+        return htmlContent;
+        //string html = $"<HTML><BODY>My web page.<br>{DateTime.Now}   <p><input type='submit' value='按钮'></BODY></HTML>";
+        //return html;
     }
 }

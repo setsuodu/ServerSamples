@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Display Current Time</title>
+</head>
+
+<body onload="getDate()">
+My web page.
+<p>
+<!--
+  This is the first paragraph of text. This is the first paragraph of text. This
+  is the first paragraph of text. This is the first paragraph of text.
+-->
+</p>
+<div id="curtime"></div>
+<p>
+<!--
+  This is the second paragraph. This is the second paragraph. This is the second
+  paragraph. This is the second paragraph.
+-->
+</p>
+<input type='submit' value='按钮'>
+
+<script>
+Date.prototype.YYYYMMDDHHMMSS = function () {
+	var yyyy = this.getFullYear().toString();
+	var MM = pad(this.getMonth() + 1,2);
+	var dd = pad(this.getDate(), 2);
+	var hh = pad(this.getHours(), 2);
+	var mm = pad(this.getMinutes(), 2)
+	var ss = pad(this.getSeconds(), 2)
+	return yyyy + MM + dd+  hh + mm + ss;
+};
+function getDate() {
+	var date = new Date();
+	//alert(d.YYYYMMDDHHMMSS());
+	var dateStr = date.toLocaleString();
+	document.getElementById("curtime").innerHTML = dateStr;
+};
+setInterval(getDate, 1000); // 每秒更新一次时间
+</script>
+</body>
+</html>
