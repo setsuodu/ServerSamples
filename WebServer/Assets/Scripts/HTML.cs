@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using UnityEngine;
 
@@ -6,22 +7,28 @@ public class Web : MonoBehaviour
 {
     WebServer ws = null;
 
+    static string wwwFolder;
+
     void Start()
     {
-        ws = new WebServer(SendResponse, "http://localhost:8080/test/");
+        wwwFolder = Path.Combine(Environment.CurrentDirectory, "www");
+        //Debug.Log(wwwFolder);
+
+        ws = new WebServer(SendResponse, "http://localhost:8080/");
         ws.Run();
-        //Console.WriteLine("A simple webserver. Press a key to quit.");
-        //Console.ReadKey();
-        //ws.Stop();
     }
 
     void OnDestroy()
     {
-        ws.Stop();
+        ws?.Stop();
     }
 
     public static string SendResponse(HttpListenerRequest request)
     {
-        return string.Format("<HTML><BODY>My web page.<br>{0}   <p><input type='submit' value='§°§ä§á§â§Ñ§Ó§Ú§ä§î'></BODY></HTML>", DateTime.Now);
+        //string htmlPath = Path.Combine(wwwFolder, "index.html");
+        //string htmlContent = File.ReadAllText(htmlPath);
+        //return htmlContent;
+        string html = $"<HTML><BODY>My web page.<br>{DateTime.Now}   <p><input type='submit' value='æŒ‰é’®'></BODY></HTML>";
+        return html;
     }
 }

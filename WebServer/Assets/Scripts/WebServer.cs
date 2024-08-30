@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -10,6 +9,7 @@ public class WebServer
     private readonly HttpListener _listener = new HttpListener();
     private readonly Func<HttpListenerRequest, string> _responderMethod;
 
+    public WebServer(Func<HttpListenerRequest, string> method, params string[] prefixes) : this(prefixes, method) { } //用到这个
     public WebServer(string[] prefixes, Func<HttpListenerRequest, string> method)
     {
         // A responder method is required
@@ -22,32 +22,36 @@ public class WebServer
         _responderMethod = method;
         _listener.Start();
     }
-    public WebServer(Func<HttpListenerRequest, string> method, params string[] prefixes) : this(prefixes, method) { }
 
     public void Run()
     {
         ThreadPool.QueueUserWorkItem((o) =>
         {
-            Console.WriteLine("Webserver running...");
+            Debug.Log("Webserver running...");
             try
             {
                 while (_listener.IsListening)
                 {
                     ThreadPool.QueueUserWorkItem((c) =>
                     {
-                        var ctx = c as HttpListenerContext;
+                        var contenxt = c as HttpListenerContext;
                         try
                         {
-                            string rstr = _responderMethod(ctx.Request);
-                            byte[] buf = Encoding.UTF8.GetBytes(rstr);
-                            ctx.Response.ContentLength64 = buf.Length;
-                            ctx.Response.OutputStream.Write(buf, 0, buf.Length);
+                            //Debug.Log(ctx.Request); //System.Net.HttpListenerRequest
+                            string html = _responderMethod(contenxt.Request);
+                            //Debug.Log(rstr); //<HTML>...
+                            byte[] buffer = Encoding.UTF8.GetBytes(html);
+                            contenxt.Response.ContentLength64 = buffer.Length;
+                            contenxt.Response.ContentType = "text/html"; //输出网页
+                            contenxt.Response.ContentEncoding = Encoding.UTF8; //解决中文乱码
+                            contenxt.Response.StatusCode = 200;
+                            contenxt.Response.OutputStream.Write(buffer, 0, buffer.Length);
                         }
                         catch { } // suppress any exceptions
                         finally
                         {
                             // always close the stream
-                            ctx.Response.OutputStream.Close();
+                            contenxt.Response.OutputStream.Close();
                         }
                     }, _listener.GetContext());
                 }
@@ -56,11 +60,10 @@ public class WebServer
         });
     }
 
-    public string SendResponse(HttpListenerRequest request)
+    public void Stop()
     {
-        string path = @"static\index.html";
-        Debug.Log($"file : {File.Exists(path)}");
-        return File.ReadAllText(path);
+        _listener?.Stop();
+        _listener?.Close();
     }
 
     void Detect()
@@ -81,11 +84,5 @@ public class WebServer
         //{
         //    Response.Redirect("http://fr.mysite.com");
         //}
-    }
-
-    public void Stop()
-    {
-        _listener.Stop();
-        _listener.Close();
     }
 }

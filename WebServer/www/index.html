@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Display Current Time</title>
+<script "type=text/javascript">
+
+Date.prototype.YYYYMMDDHHMMSS = function () {
+	var yyyy = this.getFullYear().toString();
+	var MM = pad(this.getMonth() + 1,2);
+	var dd = pad(this.getDate(), 2);
+	var hh = pad(this.getHours(), 2);
+	var mm = pad(this.getMinutes(), 2)
+	var ss = pad(this.getSeconds(), 2)
+	return yyyy + MM + dd+  hh + mm + ss;
+};
+function getDate() {
+	d = new Date();
+	alert(d.YYYYMMDDHHMMSS());
+}
+<!--
+function displayTime() {
+  var now = new Date();
+  var hours = now.getHours();
+  var minutes = now.getMinutes();
+  var seconds = now.getSeconds();
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+  var time = hours + ':' + minutes + ':' + seconds;
+  document.getElementById('time').textContent = time;
+}
+-->
+ 
+setInterval(getDate, 1000); // 每秒更新一次时间
+</script>
+</head>
+
+<body onload="getDate()">
+My web page.
+<div id="time"></div>
+<p><input type='submit' value='按钮'>
+</body>
+</html>
