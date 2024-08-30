@@ -39,10 +39,12 @@ public class WebServer
                         var contenxt = c as HttpListenerContext;
                         try
                         {
-                            CheckIP(contenxt);
-                            CheckVPN();
-                            bool vpn = CheckForVPNInterface();
-                            Debug.Log($"vpn : {vpn}");
+                            //Debug.Log("user come");
+                            //CheckIP(contenxt);
+                            //CheckVPN();
+                            //bool vpn = CheckForVPNInterface();
+                            //Debug.Log($"vpn : {vpn}"); //VPN测不出来
+                            //CheckRegion();
 
                             string html = _responderMethod(contenxt.Request);
                             byte[] buffer = Encoding.UTF8.GetBytes(html);
@@ -98,7 +100,7 @@ public class WebServer
         //}
     }
 
-    // 检查服务器还是客户端？
+    // 只返回美国，无效
     void CheckRegion()
     {
         var regionInfo = System.Globalization.RegionInfo.CurrentRegion;
