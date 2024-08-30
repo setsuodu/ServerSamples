@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -37,9 +38,9 @@ public class WebServer
                         var contenxt = c as HttpListenerContext;
                         try
                         {
-                            //Debug.Log(ctx.Request); //System.Net.HttpListenerRequest
+                            CheckIP(contenxt);
+
                             string html = _responderMethod(contenxt.Request);
-                            //Debug.Log(rstr); //<HTML>...
                             byte[] buffer = Encoding.UTF8.GetBytes(html);
                             contenxt.Response.ContentLength64 = buffer.Length;
                             contenxt.Response.ContentType = "text/html"; //输出网页
@@ -66,23 +67,44 @@ public class WebServer
         _listener?.Close();
     }
 
-    void Detect()
+    // 检查来访用户地址
+    void CheckIP(HttpListenerContext contenxt)
     {
-        //string userIP = Request.ServerVariables["REMOTE_ADDR"];
-        //string localeAPIURL = "http://api.hostip.info/get_html.php?ip=" + userIP;
+        string userIP = contenxt.Request.RemoteEndPoint.Address.ToString();
+        Debug.Log($"client ip : {userIP}");
 
-        //HttpWebRequest r = (HttpWebRequest)WebRequest.Create(localeAPIURL);
-        //r.Method = "Get";
-        //HttpWebResponse res = (HttpWebResponse)r.GetResponse();
-        //Stream sr = res.GetResponseStream();
-        //StreamReader sre = new StreamReader(sr);
+        string localeAPIURL = "http://api.hostip.info/get_html.php?ip=" + userIP;
+        HttpWebRequest r = (HttpWebRequest)WebRequest.Create(localeAPIURL);
+        r.Method = "Get";
+        HttpWebResponse res = (HttpWebResponse)r.GetResponse();
+        Stream sr = res.GetResponseStream();
+        StreamReader sre = new StreamReader(sr);
 
-        //// check response for FRANCE
-        //string s = sre.ReadToEnd();
+        // check response for FRANCE
+        string s = sre.ReadToEnd();
+        Debug.Log(s);
+        //Country: (Private Address) (XX)
+        //City: (Private Address)
+        //IP: 127.0.0.1
+
         //string sub = s.Substring(9, 6);
         //if (sub == "FRANCE")
         //{
-        //    Response.Redirect("http://fr.mysite.com");
+        //    contenxt.Response.Redirect("http://fr.mysite.com");
         //}
+    }
+
+    // 检查服务器还是客户端？
+    void CheckRegion()
+    {
+        var regionInfo = System.Globalization.RegionInfo.CurrentRegion;
+        var name = regionInfo.Name;
+        var englishName = regionInfo.EnglishName;
+        var displayName = regionInfo.DisplayName;
+        var geo = regionInfo.GeoId;
+        Debug.Log($"Name: {name}");
+        Debug.Log($"EnglishName: {englishName}");
+        Debug.Log($"DisplayName: {displayName}");
+        Debug.Log($"geo: {geo}"); //45→China
     }
 }
