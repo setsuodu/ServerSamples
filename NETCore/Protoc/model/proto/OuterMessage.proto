@@ -1,0 +1,142 @@
+syntax = "proto3";
+package ET;
+//option csharp_namespace = "HotFix";
+
+// 错误码
+message ErrorPacket
+{
+	int32 Code = 1;
+	string Message = 2;
+}
+//message Empty {} //注意括号不能写在一行，工具不认。
+message EmptyPacket
+{
+}
+
+// 聊天
+message TheMsg
+{
+	string Name = 1;
+	string Content = 2;
+}
+message TheMsgList
+{
+	int32 Id = 1;
+	repeated string Content = 2;
+}
+
+// 登录
+message C2S_LoginTokenPacket
+{
+	string Token = 1;
+}
+message C2S_LoginPacket
+{
+	string Username = 1;
+	string Password = 2;
+}
+message S2C_LoginResultPacket
+{
+	int32 Code = 1;
+    //string PeerId;
+	string Username = 2;
+	string Nickname = 3;
+}
+
+// 房间
+message C2S_RoomListPacket
+{
+	int32 Page 	= 1; //页面
+}
+message C2S_CreateRoomPacket
+{
+	string RoomName = 1; //房间名
+	string RoomPwd 	= 2; //房间密码
+	int32 LimitNum 	= 3; //玩家数
+}
+message C2S_JoinRoomPacket
+{
+	int32 RoomID 	= 1; //房间Id
+	string RoomPwd 	= 2; //房间密码
+}
+message S2C_RoomInfo
+{
+	RoomInfo Room = 1;
+}
+message S2C_GetRoomList
+{
+	repeated RoomInfo Rooms = 1; //房间列表
+	int32 Page 	= 2; 			 //页码
+}
+message S2C_LeaveRoomPacket
+{
+	int32 RoomID 	= 1; //房间Id
+	string RoomName = 2; //房间名
+	int32 LeaveBy 	= 3; //0.自己离开，1.被房主移除，2.房间解散，3.游戏结束？
+}
+message C2S_OperateSeatPacket
+{
+	int32 SeatID 	= 1; //被操作的座位
+	int32 Operate 	= 2; //操作类型（0.添加机器人，1.踢人）
+	//int32 Level 	= 3; //操作内容（0.机器人难度，1.给房主）
+}
+//工具不支持使用enum
+//enum OperateType
+//{
+//	ADD_BOT 		= 0; //Proto3中，首成员必须是0。
+//	KICK_PLAYER 	= 1;
+//}
+//房间信息
+message RoomInfo
+{
+	int32 RoomID 				= 1; //房间Id
+	string RoomName 			= 2; //房间名
+	bool HasPwd 				= 3; //有无密码
+	string Pwd 					= 4; //密码（仅创建时下发给房主）
+	int32 LimitNum 				= 5; //人数限制
+	repeated PlayerInfo Players = 6; //玩家信息
+}
+//房间内玩家信息
+message PlayerInfo
+{
+	//string PeerId 	= 1; //连接号
+	string UserName = 1; //用户名
+	string NickName = 2; //昵称
+	int32 SeatID 	= 3; //座位号
+}
+
+//颜色和手牌（游戏开始、重连）
+message S2C_GameStartPacket
+{
+	int32 Color 		= 1; //颜色
+	repeated int32 Cards 	= 2; //5张手牌的ID
+}
+
+//出牌
+message C2S_PlayCardPacket
+{
+	int32 CardID = 1; //唯一识别号
+	int32 Color  = 2; //彩色牌指定颜色，根据颜色enum。
+}
+message S2C_PlayCardPacket
+{
+	int32 CardID = 1; //唯一识别号
+	int32 Color  = 2; //彩色牌指定颜色，根据颜色enum。
+	int32 SeatID = 3; //出牌人的座位
+}
+//发牌
+message S2C_DealPacket
+{
+	int32 CardID = 1; //唯一识别号
+	int32 SeatID = 2; //发给的座位
+}
+message S2C_NextTurnPacket
+{
+	int32 SeatID = 1; //下个出牌人的座位
+}
+//比赛结果
+message S2C_GameResultPacket
+{
+	repeated int32 Rank = 1; //索引是座位号
+}
+
