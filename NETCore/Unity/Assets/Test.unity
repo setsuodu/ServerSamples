@@ -223,7 +223,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1755236834}
-  - component: {fileID: 1755236835}
+  - component: {fileID: 1755236836}
   m_Layer: 0
   m_Name: TcpClient
   m_TagString: Untagged
@@ -246,7 +246,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1755236835
+--- !u!114 &1755236836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -255,11 +255,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1755236833}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20853b0e939ecdf438322ac3b2a3e646, type: 3}
+  m_Script: {fileID: 11500000, guid: 96c2f11e4677132408f752ac3cfa4bfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverIp: 127.0.0.1
-  serverPort: 8080
 --- !u!1 &2044153586
 GameObject:
   m_ObjectHideFlags: 0
