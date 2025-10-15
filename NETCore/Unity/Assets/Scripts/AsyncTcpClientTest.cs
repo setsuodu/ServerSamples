@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Google.Protobuf;
+using System.Threading.Tasks;
 
 public class AsyncTcpClientTest : MonoBehaviour
 {
@@ -51,15 +52,19 @@ public class AsyncTcpClientTest : MonoBehaviour
     {
         Debug.Log("SendTestMessage");
         byte[] data = System.Text.Encoding.UTF8.GetBytes("Hello, Server!");
-        netClient.Send(data);
+        netClient.SendBytes(data);
     }
     public void SendMessage()
     {
-        var msg = new Tutorial.TheMsg
+        // 封装消息：在发送前，将消息号和序列化后的 Protobuf 消息体打包成一个完整的字节数组。
+        // 拆解消息：在接收时，先读取包总长度，再读取消息号，最后将剩余的字节反序列化为对应的 Protobuf 消息。
+        // 异步收发：为避免阻塞主线程，使用异步方法（如 Task）或多线程处理网络通信。
+        var msg = new C2S_Login
         {
-            Name = "Unity",
-            Content = "I send a message to you"
+            Username = "Unity",
+            Password = "123456",
         };
-        netClient.Send(msg.ToByteArray());
+        //netClient.SendBytes(msg.ToByteArray());
+        netClient.SendProto((int)MessageType.Login, msg);
     }
 }

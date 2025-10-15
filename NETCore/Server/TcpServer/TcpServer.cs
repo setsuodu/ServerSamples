@@ -80,10 +80,7 @@ public class TcpServer
         {
             //Console.WriteLine($"Connected: {client.Connected}"); //False
             //Console.WriteLine($"Null: {client == null}"); //False
-            //if (client.Connected)
-            {
-                client.Close();
-            }
+            client.Close();
             //OnDisconnect?.Invoke(client); //不能在这里处理，已经无法access
             _clients.TryRemove(client, out _);
         }
