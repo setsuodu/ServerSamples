@@ -63,6 +63,7 @@ public class TcpServer
                     if (bytesRead == 0)
                     {
                         // 客户端断开连接
+                        OnDisconnect?.Invoke(client);
                         break;
                     }
 
@@ -77,11 +78,13 @@ public class TcpServer
         }
         finally
         {
-            if (client.Connected)
+            //Console.WriteLine($"Connected: {client.Connected}"); //False
+            //Console.WriteLine($"Null: {client == null}"); //False
+            //if (client.Connected)
             {
                 client.Close();
             }
-            OnDisconnect?.Invoke(client);
+            //OnDisconnect?.Invoke(client); //不能在这里处理，已经无法access
             _clients.TryRemove(client, out _);
         }
     }
