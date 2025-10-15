@@ -3,6 +3,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 
+// Tcp[√]|Async[√]|Proto[×]|Actor[×]
 public class TcpServer
 {
     private TcpListener _listener;
