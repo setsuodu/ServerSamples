@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProtocolCompilerEnabled: 1
   CSharpCompilerEnabled: 1
-  CSharpCustomPath: Assets/Scripts/
+  CSharpCustomPath: Assets/Proto/
   GoLangCompilerEnabled: 0
   GoLangCustomPath: 
   PythonCompilerEnabled: 0
