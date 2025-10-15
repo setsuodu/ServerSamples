@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -10,7 +11,7 @@ public class TcpClientDemo : MonoBehaviour
 {
     public TcpClient _client;
     private NetworkStream _stream;
-    private bool _isConnected;
+    private volatile bool _isConnected;
 
     async void Start()
     {
@@ -63,9 +64,9 @@ public class TcpClientDemo : MonoBehaviour
     {
         byte[] buffer = new byte[1024];
 
-        while (_isConnected)
+        try
         {
-            try
+            while (_isConnected)
             {
                 int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (bytesRead == 0)
@@ -80,16 +81,42 @@ public class TcpClientDemo : MonoBehaviour
                 string message = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
                 Debug.Log($"Received: {message}");
             }
-            catch (Exception ex)
-            {
-                // 不是 Unity 独有的问题，.NETCore 也会报。
-                // Receive error: Unable to read data from the transport connection:
-                // 由于线程退出或应用程序请求，已中止 I/O 操作。
-
-                Debug.LogError($"Receive error: {ex.Message}");
-                _isConnected = false;
-                break;
-            }
+        }
+        //catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted)
+        //{
+        //    Debug.LogError("套接字操作被中止: " + ex.Message);
+        //    // 报错是【由于线程退出或应用程序请求，已中止 I/O 操作。】，无法从 SocketException 捕获错误。
+        //}
+        //catch (IOException ex) when (!_isConnected)
+        //{
+        //    Debug.LogError($"Connection closed intentionally.故意、主动关闭: {ex.Message}"); //故意、主动关闭
+        //}
+        catch (IOException ex) when (ex.InnerException is SocketException se &&
+                             (se.SocketErrorCode == SocketError.OperationAborted)) // 通过操作断开
+        {
+            Debug.LogError("Connection closed or aborted.通过操作断开");
+        }
+        catch (IOException ex) when (ex.InnerException is SocketException se &&
+                             (se.SocketErrorCode == SocketError.ConnectionAborted ||
+                              se.SocketErrorCode == SocketError.ConnectionReset)) // 无法捕获，直接跳到 catch《其他未预期的异常》
+        {
+            // 连接被关闭（可能是调用了 TcpClient.Close() 或客户端断开）
+            Debug.LogError("Connection closed or aborted.");
+        }
+        catch (ObjectDisposedException)
+        {
+            // TcpClient 或 NetworkStream 已被释放
+            Debug.LogError("Connection disposed.");
+        }
+        catch (Exception ex)
+        {
+            // 其他未预期的异常
+            Debug.LogError($"Receive error: {ex.Message}");
+        }
+        finally
+        {
+            // 确保清理资源
+            _client?.Close();
         }
 
         Cleanup();
@@ -104,7 +131,7 @@ public class TcpClientDemo : MonoBehaviour
     [ContextMenu("Disconnect")]
     public void Cleanup()
     {
-        _isConnected = false;
+        _isConnected = false; // 设置标志
         _stream?.Close();
         _client?.Close();
         Debug.Log("Disconnected from server.");
