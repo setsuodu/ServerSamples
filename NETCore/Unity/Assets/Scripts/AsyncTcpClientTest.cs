@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
 using Google.Protobuf;
-using System.Threading.Tasks;
+using UnityEngine;
+using UnityEditor;
 
 public class AsyncTcpClientTest : MonoBehaviour
 {
@@ -19,15 +20,15 @@ public class AsyncTcpClientTest : MonoBehaviour
         netClient.OnError += OnError;
 
         netClient.Connect(serverIp, serverPort);
-        
+
         // 发送测试消息
-        Invoke("SendTestMessage", 2f);
+        //Invoke("SendLogin", 2f);
         //InvokeRepeating("SendTestMessage", -1, 2f);
     }
 
     void OnDestroy()
     {
-        netClient.Disconnect();
+        netClient.Disconnect(); //主动断开
     }
 
     void OnConnected()
@@ -38,9 +39,9 @@ public class AsyncTcpClientTest : MonoBehaviour
     {
         Debug.Log("Disconnected from server!");
     }
-    void OnDataReceived(string data)
+    void OnDataReceived(MsgId id, IMessage data)
     {
-        Debug.Log($"Received: {data}");
+        //Debug.Log($"Received: {data}");
     }
     void OnError(System.Exception ex)
     {
@@ -54,7 +55,8 @@ public class AsyncTcpClientTest : MonoBehaviour
         byte[] data = System.Text.Encoding.UTF8.GetBytes("Hello, Server!");
         netClient.SendBytes(data);
     }
-    public void SendMessage()
+    [ContextMenu("SendLogin")]
+    public void SendLogin()
     {
         // 封装消息：在发送前，将消息号和序列化后的 Protobuf 消息体打包成一个完整的字节数组。
         // 拆解消息：在接收时，先读取包总长度，再读取消息号，最后将剩余的字节反序列化为对应的 Protobuf 消息。
@@ -64,7 +66,11 @@ public class AsyncTcpClientTest : MonoBehaviour
             Username = "Unity",
             Password = "123456",
         };
-        //netClient.SendBytes(msg.ToByteArray());
-        netClient.SendProto((int)MessageType.Login, msg);
+        netClient.SendProto((int)MsgId.Login, msg);
+    }
+    [ContextMenu("Disconnect")]
+    public void Disconnect()
+    {
+        netClient.Disconnect(); //主动断开
     }
 }

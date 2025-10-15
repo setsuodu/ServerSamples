@@ -1,35 +1,33 @@
-﻿using System.Text;
-
-// See https://aka.ms/new-console-template for more information
+﻿// See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
 
-var listener = new TcpListenerActor("127.0.0.1", 8080);
+var listener = new AsyncTcpServer.AsyncTcpServer(8080);
 
 // 注册事件
-listener.OnConnect += async (client, clientId) =>
+listener.OnConnect += async (context) => await Task.Run(() =>
 {
-    Console.WriteLine($"Client {clientId} connected from {client.Client.RemoteEndPoint}");
-};
+    Console.WriteLine($"[OnConnect] Client {context.ClientId} connected from {context.Client.Client.RemoteEndPoint}");
+});
 
-listener.OnMessage += async (client, clientId, message) =>
+listener.OnMessage += async (context, message) => await Task.Run(() =>
 {
-    Console.WriteLine($"Message from {clientId}: {message}");
+    Console.WriteLine($"[OnMessage] Message from {context.ClientId}: {(MsgId)message.MessageId}");
     // 回发消息
-    var stream = client.GetStream();
-    var response = Encoding.UTF8.GetBytes($"Echo: {message}");
-    await stream.WriteAsync(response, 0, response.Length);
-};
+    //var stream = context.Client.GetStream();
+    //var response = Encoding.UTF8.GetBytes($"Echo: {message}");
+    //await stream.WriteAsync(response, 0, response.Length);
+});
 
-listener.OnDisconnect += async (client, clientId) =>
+listener.OnDisconnect += async (context) => await Task.Run(() =>
 {
-    Console.WriteLine($"Client {clientId} disconnected");
-};
+    Console.WriteLine($"[OnDisconnect] Client {context.ClientId} disconnected");
+});
 
-listener.OnError += async (client, clientId, ex) =>
+listener.OnError += async (context, ex) => await Task.Run(() =>
 {
-    Console.WriteLine($"Error for client {clientId}: {ex.Message}");
-};
+    Console.WriteLine($"[OnError] Error for client {context.ClientId}: {ex.Message}");
+});
 
 // 启动监听
 await listener.StartAsync();

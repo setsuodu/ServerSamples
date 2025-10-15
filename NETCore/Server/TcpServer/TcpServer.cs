@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Net;
+﻿using System.Net;
+using System.Text;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 
@@ -13,7 +13,7 @@ public class TcpServer
     // 定义事件
     public event Action<TcpClient>? OnConnect;
     public event Action<TcpClient, Exception>? OnError;
-    public event Action<TcpClient, string>? OnMessage;
+    public event Action<TcpClient, byte[]>? OnMessage;
     public event Action<TcpClient>? OnDisconnect;
 
     public TcpServer(string ipAddress, int port)
@@ -67,8 +67,8 @@ public class TcpServer
                         break;
                     }
 
-                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    OnMessage?.Invoke(client, message);
+                    OnMessage?.Invoke(client, buffer);
+                    Console.WriteLine($"receive: {Encoding.UTF8.GetString(buffer, 0, bytesRead)}");
                 }
             }
         }

@@ -17,7 +17,8 @@ public class AsyncTcpClient
     // 回调委托
     public Action OnConnected;
     public Action OnDisconnected;
-    public Action<string> OnDataReceived;
+    //public Action<string> OnDataReceived;
+    public Action<MsgId, IMessage> OnDataReceived;
     public Action<Exception> OnError;
 
     // 配置
@@ -55,16 +56,37 @@ public class AsyncTcpClient
     /// </summary>
     public void Disconnect()
     {
+        Debug.Log($"Disconnect: isRunning={isRunning}"); //True
         if (!isRunning) return;
 
         isRunning = false;
-        stream?.Close();
-        tcpClient?.Close();
-        receiveThread?.Interrupt();
-        receiveThread = null;
+
+        // 应该先终止线程，然后再关socket
+        if (receiveThread != null && receiveThread.IsAlive)
+        {
+            //receiveThread.Join(); // 等待线程退出（影响Unity主线程卡死）
+            receiveThread.Interrupt(); // 它不会强制终止线程，而是让线程有机会处理中断并优雅退出。
+            receiveThread?.Abort(); //乎不推荐在 Unity 中使用 Thread.Abort
+            receiveThread = null;
+        }
+        if (tcpClient != null && tcpClient.Connected)
+        {
+            tcpClient.Close(); // 可选：优雅关闭
+            stream?.Close();
+            tcpClient = null;
+            stream = null;
+        }
+
+        //stream?.Close();
+        //tcpClient?.Close();
+        //receiveThread?.Interrupt(); //它不会强制终止线程，而是让线程有机会处理中断并优雅退出。
+        //receiveThread = null;
+
+
+        // 应该使用 CancellationToken
 
         // 触发断开连接回调
-        OnDisconnected?.Invoke();
+        OnDisconnected?.Invoke(); //
     }
 
     /// <summary>
@@ -120,43 +142,6 @@ public class AsyncTcpClient
     /// <summary>
     /// 接收数据
     /// </summary>
-    private void ReceiveData()
-    {
-        while (isRunning)
-        {
-            try
-            {
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
-                {
-                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    // 在主线程中触发接收数据回调
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-                        OnDataReceived?.Invoke(message);
-                    });
-                }
-                else
-                {
-                    // 服务器断开连接
-                    Disconnect();
-                    break;
-                }
-            }
-            catch (Exception ex)
-            {
-                if (isRunning)
-                {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-                        OnError?.Invoke(ex);
-                    });
-                    Disconnect();
-                }
-                break;
-            }
-        }
-    }
     private void ReceiveMessages()
     {
         byte[] buffer = new byte[1024];
@@ -175,7 +160,7 @@ public class AsyncTcpClient
                 byte[] idBytes = new byte[4];
                 if (ReadFully(stream, idBytes, 4) != 4) continue;
 
-                int messageId = BitConverter.ToInt32(idBytes, 0);
+                MsgId messageId = (MsgId)BitConverter.ToInt32(idBytes, 0);
 
                 // 读取消息体
                 byte[] protoBytes = new byte[totalLength - 4];
@@ -184,14 +169,16 @@ public class AsyncTcpClient
                 // 根据消息 Id 确定用不同的 ProtoClass 反序列化
                 //MyMessage message = MyMessage.Parser.ParseFrom(protoBytes);
                 // C# 8.0+ 高级语法糖
-                IMessage message = (MessageType)messageId switch
+                IMessage message = messageId switch
                 {
-                    MessageType.Login => S2C_Login.Parser.ParseFrom(protoBytes), // 登录请求
-                    MessageType.Logout => S2C_Logout.Parser.ParseFrom(protoBytes), // 登出请求
-                    MessageType.GetFriendList => S2C_GetFriendList.Parser.ParseFrom(protoBytes), // 获取好友列表请求
+                    MsgId.Login => S2C_Login.Parser.ParseFrom(protoBytes), // 登录请求
+                    MsgId.Logout => S2C_Logout.Parser.ParseFrom(protoBytes), // 登出请求
+                    MsgId.GetFriendList => S2C_GetFriendList.Parser.ParseFrom(protoBytes), // 获取好友列表请求
                     _ => null, // 未知消息
                 };
-                Debug.Log($"Received message ID: {messageId}, Content: {message.ToString()}");
+                OnDataReceived?.Invoke(messageId, message);
+                //Debug.Log($"Received message ID: {messageId}, Content: {message.ToString()}");
+
             }
             catch (Exception e)
             {

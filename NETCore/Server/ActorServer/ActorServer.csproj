@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Akka" Version="1.5.53" />
     <PackageReference Include="Google.Protobuf" Version="3.32.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Proto\Proto.csproj" />
   </ItemGroup>
 
 </Project>

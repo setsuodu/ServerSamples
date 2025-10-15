@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Google.Protobuf;
 
 namespace AsyncTcpServer
 {
@@ -66,8 +66,8 @@ namespace AsyncTcpServer
 
                     if (_clients.TryAdd(clientId, context))
                     {
-                        _ = Task.Run(() => HandleClientAsync(context), _cts.Token);
-                        await (OnConnect?.Invoke(context) ?? Task.CompletedTask);
+                        await (OnConnect?.Invoke(context) ?? Task.CompletedTask); // 触发连接事件
+                        _ = Task.Run(() => HandleClientAsync(context), _cts.Token); // 异步处理客户端
                     }
                 }
             }
@@ -81,60 +81,80 @@ namespace AsyncTcpServer
         {
             try
             {
-                using (var stream = context.Stream)
+                using (NetworkStream stream = context.Client.GetStream())
                 {
-                    while (!_cts.Token.IsCancellationRequested && context.Client.Connected)
+                    while (context.Client.Connected)
                     {
-                        // 读取消息号（假设4字节整数）
-                        var header = new byte[4];
-                        int bytesRead = await stream.ReadAsync(header, 0, header.Length, _cts.Token).ConfigureAwait(false);
-                        if (bytesRead != 4)
-                        {
-                            throw new IOException("Failed to read message header");
-                        }
+                        Message message = await ReadMessageAsync(context, stream);
+                        if (message == null) break;
 
-                        int messageId = BitConverter.ToInt32(header, 0);
-
-                        // 读取消息长度（假设4字节整数）
-                        var lengthBuffer = new byte[4];
-                        bytesRead = await stream.ReadAsync(lengthBuffer, 0, lengthBuffer.Length, _cts.Token).ConfigureAwait(false);
-                        if (bytesRead != 4)
-                        {
-                            throw new IOException("Failed to read message length");
-                        }
-
-                        int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
-
-                        // 读取消息体
-                        var messageData = new byte[messageLength];
-                        bytesRead = await stream.ReadAsync(messageData, 0, messageLength, _cts.Token).ConfigureAwait(false);
-                        if (bytesRead != messageLength)
-                        {
-                            throw new IOException("Failed to read complete message");
-                        }
-
-                        var message = new Message
-                        {
-                            MessageId = messageId,
-                            Data = messageData
-                        };
-
-                        // 使用Actor模型处理消息
+                        Console.WriteLine($"Received message ID: {message.MessageId}");
+                        // 在这里处理 Protobuf 消息 (message.ProtoData)
                         await ProcessMessageAsync(context, message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await (OnError?.Invoke(context, ex) ?? Task.CompletedTask);
+                Console.WriteLine("Error handling client: " + ex.Message);
             }
             finally
             {
-                if (_clients.TryRemove(context.ClientId, out _))
+                context.Client.Close();
+                //Console.WriteLine("Client disconnected: " + context.Client.Client?.RemoteEndPoint);
+            }
+        }
+
+        private async Task<Message> ReadMessageAsync(ClientContext context, NetworkStream stream)
+        {
+            try
+            {
+                // 读取消息长度 (4 字节)
+                byte[] lengthBuffer = new byte[4];
+                int bytesRead = await stream.ReadAsync(lengthBuffer, 0, lengthBuffer.Length);
+                if (bytesRead < 4)
                 {
-                    context.Client.Close();
-                    await (OnDisconnect?.Invoke(context) ?? Task.CompletedTask);
+                    OnDisconnect?.Invoke(context);
+                    Console.WriteLine($"111111");
+                    return null; // 客户端断开或数据不足
                 }
+                int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
+                Console.WriteLine($"读取消息长度={messageLength}");
+
+                // 读取消息号 (4 字节)
+                byte[] headerBuffer = new byte[4];
+                bytesRead = await stream.ReadAsync(headerBuffer, 0, headerBuffer.Length);
+                if (bytesRead < 4)
+                {
+                    OnDisconnect?.Invoke(context);
+                    Console.WriteLine($"2222222");
+                    return null;
+                }
+                int messageId = BitConverter.ToInt32(headerBuffer, 0);
+                Console.WriteLine($"读取消息长号={messageId}");
+
+                // 读取 Protobuf 数据
+                byte[] dataBuffer = new byte[messageLength];
+                bytesRead = await stream.ReadAsync(dataBuffer, 0, messageLength);
+                Console.WriteLine($"读取 PB 数据：{bytesRead} < {messageLength}");
+                //if (bytesRead < messageLength)
+                //{
+                //    return null; // 空 Body 很正常
+                //}
+
+                // 反序列化 Protobuf 数据（需要替换为你的具体消息类型）
+                // 这里假设你的 Protobuf 消息类为 YourProtoMessage
+                return new Message
+                {
+                    MessageId = messageId,
+                    Data = dataBuffer
+                };
+            }
+            catch (IOException)
+            {
+                OnDisconnect?.Invoke(context);
+                Console.WriteLine($"3333333");
+                return null; // 客户端断开连接
             }
         }
 

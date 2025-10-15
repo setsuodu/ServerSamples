@@ -5,9 +5,10 @@ public class Message
     public byte[] Data { get; set; }
 }
 
-public enum MessageType
-{
-    Login = 1,
-    Logout = 2,
-    GetFriendList = 3
-}
+// 放在 Proto 里定义
+//public enum MessageType
+//{
+//    Login = 1,
+//    Logout = 2,
+//    GetFriendList = 3
+//}
