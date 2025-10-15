@@ -48,6 +48,8 @@ public class TcpServer
         }
     }
 
+    // Handle收到的消息，包括Socket的状态Connected、Disconnected等
+    // TODO: 怎么分辨？
     private async void HandleClientAsync(TcpClient client)
     {
         try
@@ -64,12 +66,16 @@ public class TcpServer
                     if (bytesRead == 0)
                     {
                         // 客户端断开连接
-                        OnDisconnect?.Invoke(client);
+                        OnDisconnect?.Invoke(client); //客户端发送Disconnect，在这里收到
                         break;
                     }
 
                     OnMessage?.Invoke(client, buffer);
-                    Console.WriteLine($"receive: {Encoding.UTF8.GetString(buffer, 0, bytesRead)}");
+                    string testMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    Console.WriteLine($"receive: {testMessage}");
+
+                    // Echo to client
+                    await SendMessageAsync(client, $"server receive: {testMessage} is Ok");
                 }
             }
         }

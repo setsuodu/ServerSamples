@@ -77,11 +77,8 @@ public class AsyncTcpClient
             stream = null;
         }
 
-        //stream?.Close();
         //tcpClient?.Close();
-        //receiveThread?.Interrupt(); //它不会强制终止线程，而是让线程有机会处理中断并优雅退出。
-        //receiveThread = null;
-
+        //receiveThread?.Abort(); // 注意：谨慎使用 Abort，可能导致资源泄漏
 
         // 应该使用 CancellationToken
 
