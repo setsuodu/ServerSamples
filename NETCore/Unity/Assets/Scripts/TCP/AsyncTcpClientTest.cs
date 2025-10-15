@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using UnityEngine;
 using Google.Protobuf;
-using UnityEngine;
-using UnityEditor;
 
 public class AsyncTcpClientTest : MonoBehaviour
 {

@@ -34,3 +34,16 @@ Package Install 后，Project 中右键创建 Create / Protobuf / ProtobufConfig
 ## .NET Core 安装
 Install-Package Google.Protobuf
 Install-Package Google.Protobuf.Tools
+
+## TODO:
+0. 研究优雅取消线程。
+	- Disconnect
+	- Thread.Abort(); //可行
+	- Thread.Join(); //卡死
+	- Thread.Interrupt(); //等待，需要编译触发 ReloadDomain
+	- 测试 CancellationTokenSource
+1. TCP
+	- TcpListener / TcpClient
+2. 异步
+	- SendAsync / ReadAsync / ConnectAsync
+3. Actor（Akka）
