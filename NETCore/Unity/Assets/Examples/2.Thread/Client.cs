@@ -30,6 +30,7 @@ namespace ClientThread
         // 示例：订阅事件
         void Awake()
         {
+            UnityMainThreadDispatcher.Instance(); // 线程外先创建出来
             OnConnect += () => Debug.Log("Event: Connected to server.");
             OnDisconnect += () => Debug.Log("Event: Disconnected from server.");
             OnData += (data) => Debug.Log($"Event: Received data: {data}");
