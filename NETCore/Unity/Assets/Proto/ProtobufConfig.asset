@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7926016a0aff42d0811489f5433ce59, type: 3}
   m_Name: ProtobufConfig
   m_EditorClassIdentifier: 
-  ProtocolCompilerEnabled: 1
+  ProtocolCompilerEnabled: 0
   CSharpCompilerEnabled: 1
   CSharpCustomPath: Assets/Proto/
   GoLangCompilerEnabled: 0

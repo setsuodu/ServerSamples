@@ -20,26 +20,29 @@ public static partial class AllReflection {
   static AllReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "CglBbGwucHJvdG8iLwoJQzJTX0xvZ2luEhAKCHVzZXJuYW1lGAEgASgJEhAK",
-          "CHBhc3N3b3JkGAIgASgJIioKCVMyQ19Mb2dpbhIMCgRjb2RlGAEgASgFEg8K",
-          "B21lc3NhZ2UYAiABKAkiDAoKQzJTX0xvZ291dCIMCgpTMkNfTG9nb3V0IhMK",
-          "EUMyU19HZXRGcmllbmRMaXN0IpwBCgZGcmllbmQSEQoJZnJpZW5kX2lkGAEg",
-          "ASgJEhAKCG5pY2tuYW1lGAIgASgJEhIKCmF2YXRhcl91cmwYAyABKAkSHgoG",
-          "c3RhdHVzGAQgASgOMg4uRnJpZW5kLlN0YXR1cyI5CgZTdGF0dXMSFgoSU1RB",
-          "VFVTX1VOU1BFQ0lGSUVEEAASCgoGT05MSU5FEAESCwoHT0ZGTElORRACIi0K",
-          "EVMyQ19HZXRGcmllbmRMaXN0EhgKB2ZyaWVuZHMYASADKAsyBy5GcmllbmQq",
-          "OwoFTXNnSWQSCAoETm9uZRAAEgkKBUxvZ2luEAESCgoGTG9nb3V0EAISEQoN",
-          "R2V0RnJpZW5kTGlzdBADYgZwcm90bzM="));
+          "CglBbGwucHJvdG8iDgoMRW1wdHlSZXF1ZXN0IjIKDExvZ2luUmVxdWVzdBIQ",
+          "Cgh1c2VybmFtZRgBIAEoCRIQCghwYXNzd29yZBgCIAEoCSJPCg1Mb2dpblJl",
+          "c3BvbnNlEgwKBGNvZGUYASABKAUSDwoHdXNlcl9pZBgCIAEoCRIQCghuaWNr",
+          "bmFtZRgDIAEoCRINCgV0b2tlbhgEIAEoCSIvCg5Mb2dvdXRSZXNwb25zZRIM",
+          "CgRjb2RlGAEgASgFEg8KB21lc3NhZ2UYAiABKAkiEwoRRnJpZW5kTGlzdFJl",
+          "cXVlc3QiLgoSRnJpZW5kTGlzdFJlc3BvbnNlEhgKB2ZyaWVuZHMYASADKAsy",
+          "By5GcmllbmQinAEKBkZyaWVuZBIRCglmcmllbmRfaWQYASABKAkSEAoIbmlj",
+          "a25hbWUYAiABKAkSEgoKYXZhdGFyX3VybBgDIAEoCRIeCgZzdGF0dXMYBCAB",
+          "KA4yDi5GcmllbmQuU3RhdHVzIjkKBlN0YXR1cxIWChJTVEFUVVNfVU5TUEVD",
+          "SUZJRUQQABIKCgZPTkxJTkUQARILCgdPRkZMSU5FEAIqhgEKBU1zZ0lkEggK",
+          "BE5vbmUQABINCglDMlNfTG9naW4QARIOCgpDMlNfTG9nb3V0EAISFQoRQzJT",
+          "X0dldEZyaWVuZExpc3QQAxITCg9TMkNfTG9naW5SZXN1bHQQBBIUChBTMkNf",
+          "TG9nb3V0UmVzdWx0EAUSEgoOUzJDX0ZyaWVuZExpc3QQBmIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MsgId), }, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::C2S_Login), global::C2S_Login.Parser, new[]{ "Username", "Password" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::S2C_Login), global::S2C_Login.Parser, new[]{ "Code", "Message" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::C2S_Logout), global::C2S_Logout.Parser, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::S2C_Logout), global::S2C_Logout.Parser, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::C2S_GetFriendList), global::C2S_GetFriendList.Parser, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::Friend), global::Friend.Parser, new[]{ "FriendId", "Nickname", "AvatarUrl", "Status" }, null, new[]{ typeof(global::Friend.Types.Status) }, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::S2C_GetFriendList), global::S2C_GetFriendList.Parser, new[]{ "Friends" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::EmptyRequest), global::EmptyRequest.Parser, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::LoginRequest), global::LoginRequest.Parser, new[]{ "Username", "Password" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::LoginResponse), global::LoginResponse.Parser, new[]{ "Code", "UserId", "Nickname", "Token" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::LogoutResponse), global::LogoutResponse.Parser, new[]{ "Code", "Message" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::FriendListRequest), global::FriendListRequest.Parser, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::FriendListResponse), global::FriendListResponse.Parser, new[]{ "Friends" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Friend), global::Friend.Parser, new[]{ "FriendId", "Nickname", "AvatarUrl", "Status" }, null, new[]{ typeof(global::Friend.Types.Status) }, null)
         }));
   }
   #endregion
@@ -51,21 +54,39 @@ public static partial class AllReflection {
 /// </summary>
 public enum MsgId {
   [pbr::OriginalName("None")] None = 0,
-  [pbr::OriginalName("Login")] Login = 1,
-  [pbr::OriginalName("Logout")] Logout = 2,
-  [pbr::OriginalName("GetFriendList")] GetFriendList = 3,
+  /// <summary>
+  ////////////////////////////////////////////////
+  /// </summary>
+  [pbr::OriginalName("C2S_Login")] C2SLogin = 1,
+  /// <summary>
+  ///登出请求
+  /// </summary>
+  [pbr::OriginalName("C2S_Logout")] C2SLogout = 2,
+  /// <summary>
+  ///好友列表请求
+  /// </summary>
+  [pbr::OriginalName("C2S_GetFriendList")] C2SGetFriendList = 3,
+  /// <summary>
+  ////////////////////////////////////////////////
+  /// </summary>
+  [pbr::OriginalName("S2C_LoginResult")] S2CLoginResult = 4,
+  /// <summary>
+  ///登出结果
+  /// </summary>
+  [pbr::OriginalName("S2C_LogoutResult")] S2CLogoutResult = 5,
+  /// <summary>
+  ///好友列表结果
+  /// </summary>
+  [pbr::OriginalName("S2C_FriendList")] S2CFriendList = 6,
 }
 
 #endregion
 
 #region Messages
-/// <summary>
-/// 登录请求
-/// </summary>
-public sealed partial class C2S_Login : pb::IMessage<C2S_Login> {
-  private static readonly pb::MessageParser<C2S_Login> _parser = new pb::MessageParser<C2S_Login>(() => new C2S_Login());
+public sealed partial class EmptyRequest : pb::IMessage<EmptyRequest> {
+  private static readonly pb::MessageParser<EmptyRequest> _parser = new pb::MessageParser<EmptyRequest>(() => new EmptyRequest());
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<C2S_Login> Parser { get { return _parser; } }
+  public static pb::MessageParser<EmptyRequest> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public static pbr::MessageDescriptor Descriptor {
@@ -78,21 +99,113 @@ public sealed partial class C2S_Login : pb::IMessage<C2S_Login> {
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Login() {
+  public EmptyRequest() {
     OnConstruction();
   }
 
   partial void OnConstruction();
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Login(C2S_Login other) : this() {
+  public EmptyRequest(EmptyRequest other) : this() {
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public EmptyRequest Clone() {
+    return new EmptyRequest(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override bool Equals(object other) {
+    return Equals(other as EmptyRequest);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public bool Equals(EmptyRequest other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    return true;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override int GetHashCode() {
+    int hash = 1;
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void WriteTo(pb::CodedOutputStream output) {
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int CalculateSize() {
+    int size = 0;
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(EmptyRequest other) {
+    if (other == null) {
+      return;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(pb::CodedInputStream input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          input.SkipLastField();
+          break;
+      }
+    }
+  }
+
+}
+
+/// <summary>
+/// 登录请求
+/// </summary>
+public sealed partial class LoginRequest : pb::IMessage<LoginRequest> {
+  private static readonly pb::MessageParser<LoginRequest> _parser = new pb::MessageParser<LoginRequest>(() => new LoginRequest());
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pb::MessageParser<LoginRequest> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::AllReflection.Descriptor.MessageTypes[1]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public LoginRequest() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public LoginRequest(LoginRequest other) : this() {
     username_ = other.username_;
     password_ = other.password_;
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Login Clone() {
-    return new C2S_Login(this);
+  public LoginRequest Clone() {
+    return new LoginRequest(this);
   }
 
   /// <summary>Field number for the "username" field.</summary>
@@ -119,11 +232,11 @@ public sealed partial class C2S_Login : pb::IMessage<C2S_Login> {
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public override bool Equals(object other) {
-    return Equals(other as C2S_Login);
+    return Equals(other as LoginRequest);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(C2S_Login other) {
+  public bool Equals(LoginRequest other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -173,7 +286,7 @@ public sealed partial class C2S_Login : pb::IMessage<C2S_Login> {
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(C2S_Login other) {
+  public void MergeFrom(LoginRequest other) {
     if (other == null) {
       return;
     }
@@ -210,14 +323,14 @@ public sealed partial class C2S_Login : pb::IMessage<C2S_Login> {
 /// <summary>
 /// 登录响应
 /// </summary>
-public sealed partial class S2C_Login : pb::IMessage<S2C_Login> {
-  private static readonly pb::MessageParser<S2C_Login> _parser = new pb::MessageParser<S2C_Login>(() => new S2C_Login());
+public sealed partial class LoginResponse : pb::IMessage<LoginResponse> {
+  private static readonly pb::MessageParser<LoginResponse> _parser = new pb::MessageParser<LoginResponse>(() => new LoginResponse());
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<S2C_Login> Parser { get { return _parser; } }
+  public static pb::MessageParser<LoginResponse> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::AllReflection.Descriptor.MessageTypes[1]; }
+    get { return global::AllReflection.Descriptor.MessageTypes[2]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -226,21 +339,228 @@ public sealed partial class S2C_Login : pb::IMessage<S2C_Login> {
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Login() {
+  public LoginResponse() {
     OnConstruction();
   }
 
   partial void OnConstruction();
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Login(S2C_Login other) : this() {
+  public LoginResponse(LoginResponse other) : this() {
+    code_ = other.code_;
+    userId_ = other.userId_;
+    nickname_ = other.nickname_;
+    token_ = other.token_;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public LoginResponse Clone() {
+    return new LoginResponse(this);
+  }
+
+  /// <summary>Field number for the "code" field.</summary>
+  public const int CodeFieldNumber = 1;
+  private int code_;
+  /// <summary>
+  ///[0]成功
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int Code {
+    get { return code_; }
+    set {
+      code_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 2;
+  private string userId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public string UserId {
+    get { return userId_; }
+    set {
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "nickname" field.</summary>
+  public const int NicknameFieldNumber = 3;
+  private string nickname_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public string Nickname {
+    get { return nickname_; }
+    set {
+      nickname_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "token" field.</summary>
+  public const int TokenFieldNumber = 4;
+  private string token_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public string Token {
+    get { return token_; }
+    set {
+      token_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override bool Equals(object other) {
+    return Equals(other as LoginResponse);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public bool Equals(LoginResponse other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (Code != other.Code) return false;
+    if (UserId != other.UserId) return false;
+    if (Nickname != other.Nickname) return false;
+    if (Token != other.Token) return false;
+    return true;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (Code != 0) hash ^= Code.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
+    if (Nickname.Length != 0) hash ^= Nickname.GetHashCode();
+    if (Token.Length != 0) hash ^= Token.GetHashCode();
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void WriteTo(pb::CodedOutputStream output) {
+    if (Code != 0) {
+      output.WriteRawTag(8);
+      output.WriteInt32(Code);
+    }
+    if (UserId.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(UserId);
+    }
+    if (Nickname.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(Nickname);
+    }
+    if (Token.Length != 0) {
+      output.WriteRawTag(34);
+      output.WriteString(Token);
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int CalculateSize() {
+    int size = 0;
+    if (Code != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(Code);
+    }
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
+    }
+    if (Nickname.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Nickname);
+    }
+    if (Token.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Token);
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(LoginResponse other) {
+    if (other == null) {
+      return;
+    }
+    if (other.Code != 0) {
+      Code = other.Code;
+    }
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
+    }
+    if (other.Nickname.Length != 0) {
+      Nickname = other.Nickname;
+    }
+    if (other.Token.Length != 0) {
+      Token = other.Token;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(pb::CodedInputStream input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          input.SkipLastField();
+          break;
+        case 8: {
+          Code = input.ReadInt32();
+          break;
+        }
+        case 18: {
+          UserId = input.ReadString();
+          break;
+        }
+        case 26: {
+          Nickname = input.ReadString();
+          break;
+        }
+        case 34: {
+          Token = input.ReadString();
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+/// <summary>
+///message LogoutRequest {} //发送空包即可
+/// </summary>
+public sealed partial class LogoutResponse : pb::IMessage<LogoutResponse> {
+  private static readonly pb::MessageParser<LogoutResponse> _parser = new pb::MessageParser<LogoutResponse>(() => new LogoutResponse());
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pb::MessageParser<LogoutResponse> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::AllReflection.Descriptor.MessageTypes[3]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public LogoutResponse() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public LogoutResponse(LogoutResponse other) : this() {
     code_ = other.code_;
     message_ = other.message_;
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Login Clone() {
-    return new S2C_Login(this);
+  public LogoutResponse Clone() {
+    return new LogoutResponse(this);
   }
 
   /// <summary>Field number for the "code" field.</summary>
@@ -267,11 +587,11 @@ public sealed partial class S2C_Login : pb::IMessage<S2C_Login> {
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public override bool Equals(object other) {
-    return Equals(other as S2C_Login);
+    return Equals(other as LogoutResponse);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(S2C_Login other) {
+  public bool Equals(LogoutResponse other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -321,7 +641,7 @@ public sealed partial class S2C_Login : pb::IMessage<S2C_Login> {
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(S2C_Login other) {
+  public void MergeFrom(LogoutResponse other) {
     if (other == null) {
       return;
     }
@@ -355,191 +675,14 @@ public sealed partial class S2C_Login : pb::IMessage<S2C_Login> {
 
 }
 
-public sealed partial class C2S_Logout : pb::IMessage<C2S_Logout> {
-  private static readonly pb::MessageParser<C2S_Logout> _parser = new pb::MessageParser<C2S_Logout>(() => new C2S_Logout());
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<C2S_Logout> Parser { get { return _parser; } }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pbr::MessageDescriptor Descriptor {
-    get { return global::AllReflection.Descriptor.MessageTypes[2]; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  pbr::MessageDescriptor pb::IMessage.Descriptor {
-    get { return Descriptor; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Logout() {
-    OnConstruction();
-  }
-
-  partial void OnConstruction();
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Logout(C2S_Logout other) : this() {
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_Logout Clone() {
-    return new C2S_Logout(this);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override bool Equals(object other) {
-    return Equals(other as C2S_Logout);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(C2S_Logout other) {
-    if (ReferenceEquals(other, null)) {
-      return false;
-    }
-    if (ReferenceEquals(other, this)) {
-      return true;
-    }
-    return true;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override int GetHashCode() {
-    int hash = 1;
-    return hash;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override string ToString() {
-    return pb::JsonFormatter.ToDiagnosticString(this);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void WriteTo(pb::CodedOutputStream output) {
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int CalculateSize() {
-    int size = 0;
-    return size;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(C2S_Logout other) {
-    if (other == null) {
-      return;
-    }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(pb::CodedInputStream input) {
-    uint tag;
-    while ((tag = input.ReadTag()) != 0) {
-      switch(tag) {
-        default:
-          input.SkipLastField();
-          break;
-      }
-    }
-  }
-
-}
-
-public sealed partial class S2C_Logout : pb::IMessage<S2C_Logout> {
-  private static readonly pb::MessageParser<S2C_Logout> _parser = new pb::MessageParser<S2C_Logout>(() => new S2C_Logout());
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<S2C_Logout> Parser { get { return _parser; } }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pbr::MessageDescriptor Descriptor {
-    get { return global::AllReflection.Descriptor.MessageTypes[3]; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  pbr::MessageDescriptor pb::IMessage.Descriptor {
-    get { return Descriptor; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Logout() {
-    OnConstruction();
-  }
-
-  partial void OnConstruction();
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Logout(S2C_Logout other) : this() {
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_Logout Clone() {
-    return new S2C_Logout(this);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override bool Equals(object other) {
-    return Equals(other as S2C_Logout);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(S2C_Logout other) {
-    if (ReferenceEquals(other, null)) {
-      return false;
-    }
-    if (ReferenceEquals(other, this)) {
-      return true;
-    }
-    return true;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override int GetHashCode() {
-    int hash = 1;
-    return hash;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override string ToString() {
-    return pb::JsonFormatter.ToDiagnosticString(this);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void WriteTo(pb::CodedOutputStream output) {
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int CalculateSize() {
-    int size = 0;
-    return size;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(S2C_Logout other) {
-    if (other == null) {
-      return;
-    }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(pb::CodedInputStream input) {
-    uint tag;
-    while ((tag = input.ReadTag()) != 0) {
-      switch(tag) {
-        default:
-          input.SkipLastField();
-          break;
-      }
-    }
-  }
-
-}
-
 /// <summary>
-///string username = 1;
+/// (可选) 分页的页码，从 1 开始。
+///int32 page_number = 2;
 /// </summary>
-public sealed partial class C2S_GetFriendList : pb::IMessage<C2S_GetFriendList> {
-  private static readonly pb::MessageParser<C2S_GetFriendList> _parser = new pb::MessageParser<C2S_GetFriendList>(() => new C2S_GetFriendList());
+public sealed partial class FriendListRequest : pb::IMessage<FriendListRequest> {
+  private static readonly pb::MessageParser<FriendListRequest> _parser = new pb::MessageParser<FriendListRequest>(() => new FriendListRequest());
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<C2S_GetFriendList> Parser { get { return _parser; } }
+  public static pb::MessageParser<FriendListRequest> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public static pbr::MessageDescriptor Descriptor {
@@ -552,28 +695,28 @@ public sealed partial class C2S_GetFriendList : pb::IMessage<C2S_GetFriendList> 
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_GetFriendList() {
+  public FriendListRequest() {
     OnConstruction();
   }
 
   partial void OnConstruction();
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_GetFriendList(C2S_GetFriendList other) : this() {
+  public FriendListRequest(FriendListRequest other) : this() {
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public C2S_GetFriendList Clone() {
-    return new C2S_GetFriendList(this);
+  public FriendListRequest Clone() {
+    return new FriendListRequest(this);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public override bool Equals(object other) {
-    return Equals(other as C2S_GetFriendList);
+    return Equals(other as FriendListRequest);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(C2S_GetFriendList other) {
+  public bool Equals(FriendListRequest other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -605,7 +748,7 @@ public sealed partial class C2S_GetFriendList : pb::IMessage<C2S_GetFriendList> 
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(C2S_GetFriendList other) {
+  public void MergeFrom(FriendListRequest other) {
     if (other == null) {
       return;
     }
@@ -619,6 +762,118 @@ public sealed partial class C2S_GetFriendList : pb::IMessage<C2S_GetFriendList> 
         default:
           input.SkipLastField();
           break;
+      }
+    }
+  }
+
+}
+
+public sealed partial class FriendListResponse : pb::IMessage<FriendListResponse> {
+  private static readonly pb::MessageParser<FriendListResponse> _parser = new pb::MessageParser<FriendListResponse>(() => new FriendListResponse());
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pb::MessageParser<FriendListResponse> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::AllReflection.Descriptor.MessageTypes[5]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public FriendListResponse() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public FriendListResponse(FriendListResponse other) : this() {
+    friends_ = other.friends_.Clone();
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public FriendListResponse Clone() {
+    return new FriendListResponse(this);
+  }
+
+  /// <summary>Field number for the "friends" field.</summary>
+  public const int FriendsFieldNumber = 1;
+  private static readonly pb::FieldCodec<global::Friend> _repeated_friends_codec
+      = pb::FieldCodec.ForMessage(10, global::Friend.Parser);
+  private readonly pbc::RepeatedField<global::Friend> friends_ = new pbc::RepeatedField<global::Friend>();
+  /// <summary>
+  /// 所有的好友列表。`repeated` 关键字表示这是一个列表。
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public pbc::RepeatedField<global::Friend> Friends {
+    get { return friends_; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override bool Equals(object other) {
+    return Equals(other as FriendListResponse);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public bool Equals(FriendListResponse other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if(!friends_.Equals(other.friends_)) return false;
+    return true;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override int GetHashCode() {
+    int hash = 1;
+    hash ^= friends_.GetHashCode();
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void WriteTo(pb::CodedOutputStream output) {
+    friends_.WriteTo(output, _repeated_friends_codec);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int CalculateSize() {
+    int size = 0;
+    size += friends_.CalculateSize(_repeated_friends_codec);
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(FriendListResponse other) {
+    if (other == null) {
+      return;
+    }
+    friends_.Add(other.friends_);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(pb::CodedInputStream input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          input.SkipLastField();
+          break;
+        case 10: {
+          friends_.AddEntriesFrom(input, _repeated_friends_codec);
+          break;
+        }
       }
     }
   }
@@ -635,7 +890,7 @@ public sealed partial class Friend : pb::IMessage<Friend> {
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::AllReflection.Descriptor.MessageTypes[5]; }
+    get { return global::AllReflection.Descriptor.MessageTypes[6]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -851,121 +1106,6 @@ public sealed partial class Friend : pb::IMessage<Friend> {
 
   }
   #endregion
-
-}
-
-/// <summary>
-/// GetFriendList 返回消息。
-/// </summary>
-public sealed partial class S2C_GetFriendList : pb::IMessage<S2C_GetFriendList> {
-  private static readonly pb::MessageParser<S2C_GetFriendList> _parser = new pb::MessageParser<S2C_GetFriendList>(() => new S2C_GetFriendList());
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pb::MessageParser<S2C_GetFriendList> Parser { get { return _parser; } }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public static pbr::MessageDescriptor Descriptor {
-    get { return global::AllReflection.Descriptor.MessageTypes[6]; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  pbr::MessageDescriptor pb::IMessage.Descriptor {
-    get { return Descriptor; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_GetFriendList() {
-    OnConstruction();
-  }
-
-  partial void OnConstruction();
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_GetFriendList(S2C_GetFriendList other) : this() {
-    friends_ = other.friends_.Clone();
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public S2C_GetFriendList Clone() {
-    return new S2C_GetFriendList(this);
-  }
-
-  /// <summary>Field number for the "friends" field.</summary>
-  public const int FriendsFieldNumber = 1;
-  private static readonly pb::FieldCodec<global::Friend> _repeated_friends_codec
-      = pb::FieldCodec.ForMessage(10, global::Friend.Parser);
-  private readonly pbc::RepeatedField<global::Friend> friends_ = new pbc::RepeatedField<global::Friend>();
-  /// <summary>
-  /// 所有的好友列表。`repeated` 关键字表示这是一个列表。
-  /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public pbc::RepeatedField<global::Friend> Friends {
-    get { return friends_; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override bool Equals(object other) {
-    return Equals(other as S2C_GetFriendList);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public bool Equals(S2C_GetFriendList other) {
-    if (ReferenceEquals(other, null)) {
-      return false;
-    }
-    if (ReferenceEquals(other, this)) {
-      return true;
-    }
-    if(!friends_.Equals(other.friends_)) return false;
-    return true;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override int GetHashCode() {
-    int hash = 1;
-    hash ^= friends_.GetHashCode();
-    return hash;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public override string ToString() {
-    return pb::JsonFormatter.ToDiagnosticString(this);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void WriteTo(pb::CodedOutputStream output) {
-    friends_.WriteTo(output, _repeated_friends_codec);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public int CalculateSize() {
-    int size = 0;
-    size += friends_.CalculateSize(_repeated_friends_codec);
-    return size;
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(S2C_GetFriendList other) {
-    if (other == null) {
-      return;
-    }
-    friends_.Add(other.friends_);
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public void MergeFrom(pb::CodedInputStream input) {
-    uint tag;
-    while ((tag = input.ReadTag()) != 0) {
-      switch(tag) {
-        default:
-          input.SkipLastField();
-          break;
-        case 10: {
-          friends_.AddEntriesFrom(input, _repeated_friends_codec);
-          break;
-        }
-      }
-    }
-  }
 
 }
 

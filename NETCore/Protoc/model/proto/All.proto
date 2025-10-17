@@ -3,39 +3,54 @@ syntax = "proto3";
 // 定义消息号枚举
 enum MsgId {
     None = 0;
-    Login = 1;
-    Logout = 2;
-    GetFriendList = 3;
+	///////////////////////////////////////////////
+    C2S_Login = 1; //登录请求
+    C2S_Logout = 2; //登出请求
+    C2S_GetFriendList = 3; //好友列表请求
+	///////////////////////////////////////////////
+    S2C_LoginResult	= 4; //登录结果
+    S2C_LogoutResult = 5; //登出结果
+    S2C_FriendList = 6; //好友列表结果
 }
 
+message EmptyRequest {}
+
 // 登录请求
-message C2S_Login {
+message LoginRequest {
   string username = 1;
   string password = 2;
 }
-
 // 登录响应
-message S2C_Login {
+message LoginResponse {
+    int32 code = 1; //[0]成功
+	string user_id = 2;
+	string nickname = 3;
+	string token = 4;
+}
+
+//message LogoutRequest {} //发送空包即可
+message LogoutResponse {
     int32 code = 1;
     string message = 2;
 }
 
-message C2S_Logout {
-}
-
-message S2C_Logout {
-}
-
-message C2S_GetFriendList {
-  //string username = 1;
-  
+message FriendListRequest {
   // (可选) 分页的页码，从 1 开始。
   //int32 page_number = 2;
   
   // (可选) 每页的好友数量。
   //int32 page_size = 3;
 }
-
+message FriendListResponse {
+  // 所有的好友列表。`repeated` 关键字表示这是一个列表。
+  repeated Friend friends = 1;
+  
+  // (可选) 当前页码。
+  //int32 page_number = 2;
+  
+  // (可选) 总页数。
+  //int32 total_pages = 3;
+}
 // 单个好友信息。
 message Friend {
   // 好友的唯一 ID。
@@ -54,16 +69,4 @@ message Friend {
     OFFLINE = 2;
   }
   Status status = 4;
-}
-
-// GetFriendList 返回消息。
-message S2C_GetFriendList {
-  // 所有的好友列表。`repeated` 关键字表示这是一个列表。
-  repeated Friend friends = 1;
-  
-  // (可选) 当前页码。
-  //int32 page_number = 2;
-  
-  // (可选) 总页数。
-  //int32 total_pages = 3;
 }

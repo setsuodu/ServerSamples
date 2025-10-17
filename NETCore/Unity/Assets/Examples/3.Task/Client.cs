@@ -75,9 +75,6 @@ namespace ClientTask
 
                 // 启动接收数据任务
                 _ = Task.Run(() => ReceiveDataAsync(cts.Token), cts.Token);
-
-                // 发送一条初始消息
-                await SendMessageToServerAsync("Hello from Unity Client!");
             }
             catch (SocketException se)
             {
@@ -181,13 +178,6 @@ namespace ClientTask
             }
         }
 
-        [ContextMenu("Test Send")]
-        async void SendMessage()
-        {
-            await SendMessageToServerAsync("Client send hello world test.");
-        }
-
-        [ContextMenu("Test Disconnect")]
         void Disconnect()
         {
             if (!isConnected) return;

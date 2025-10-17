@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class TcpClientDemo : MonoBehaviour
+public class TaskTest : MonoBehaviour
 {
     public TcpClient _client;
     private NetworkStream _stream;

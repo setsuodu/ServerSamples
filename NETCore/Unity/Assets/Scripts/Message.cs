@@ -4,11 +4,3 @@ public class Message
     public int MessageId { get; set; }
     public byte[] Data { get; set; }
 }
-
-// 放在 Proto 里定义
-//public enum MessageType
-//{
-//    Login = 1,
-//    Logout = 2,
-//    GetFriendList = 3
-//}

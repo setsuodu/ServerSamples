@@ -57,11 +57,11 @@ const int PORT = 8080;
 {
     TcpServerProto.TcpServer server = new TcpServerProto.TcpServer(IP, PORT);
 
-    // 示例：订阅事件
+    // 订阅事件
     server.OnConnect += (client) => Console.WriteLine($"Event: Client {client.Client.RemoteEndPoint} connected.");
     server.OnDisconnect += (client) => Console.WriteLine($"Event: Client {client.Client?.RemoteEndPoint} disconnected.");
-    server.OnData += (client, data) => Console.WriteLine($"Event: Data from {client.Client.RemoteEndPoint}: {data}");
-    server.OnError += (client, error) => Console.WriteLine($"Event: Error {(client != null ? $"from {client.Client.RemoteEndPoint}" : "on server")}: {error.Message}");
+    server.OnData += (client, id, msg) => Console.WriteLine($"Event: Data from {client.Client?.RemoteEndPoint}, ID={id}, Message={msg}");
+    server.OnError += (client, error) => Console.WriteLine($"Event: Error {(client != null ? $"from {client.Client?.RemoteEndPoint}" : "on server")}: {error.Message}");
 
     await server.StartAsync();
 }
