@@ -29,3 +29,4 @@ System.NullReferenceException:“Object reference not set to an instance of an o
 System.Net.Sockets.TcpClient.Client.get 返回 null。
 ```
 client.Client?.RemoteEndPoint 加问号防止空
+2. 在 Unity 中使用 TcpClient 接收网络消息时，通常是在 后台线程 中进行的（例如通过异步读取或 Thread），而 Unity 的大多数 API（比如创建 GameObject、修改 UI、发事件等）只能在主线程中调用。

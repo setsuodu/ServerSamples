@@ -76,9 +76,6 @@ namespace ClientThread
                 // 启动接收数据线程
                 receiveThread = new Thread(() => ReceiveData(cts.Token));
                 receiveThread.Start();
-
-                // 发送一条初始消息
-                //SendMessageToServer("Hello from Unity Client!");
             }
             catch (Exception e)
             {
@@ -104,8 +101,18 @@ namespace ClientThread
                             return;
                         }
                         string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        OnData?.Invoke(message);
-                        Debug.Log($"Received from server: {message}");
+
+                        // ⚠️这里的处理是错误的，即使使用事件传递到别的函数里，始终在线程里，无法使用主线程API。
+                        // 但更现代的做法是 async-await。
+                        // ❌将消息抛到主线程
+                        //OnData?.Invoke(message);
+                        //Debug.Log($"Received from server: {message}");
+
+                        // ✅ 将消息抛到主线程
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {
+                            HandleMessageOnMainThread(message);
+                        });
                     }
                     else
                     {
@@ -138,6 +145,13 @@ namespace ClientThread
             }
         }
 
+        void HandleMessageOnMainThread(string message)
+        {
+            Debug.Log($"主线程收到消息: {message}");
+            // 可以安全地操作 Unity 对象了
+            // 比如更新 UI、创建 GameObject 等
+        }
+
         void SendMessageToServer(string message)
         {
             try
@@ -154,13 +168,6 @@ namespace ClientThread
             }
         }
 
-        [ContextMenu("Test Send")]
-        void SendMessage()
-        {
-            SendMessageToServer("Client send hello world test.");
-        }
-
-        [ContextMenu("Test Disconnect")]
         void Disconnect()
         {
             if (!isConnected) return;
