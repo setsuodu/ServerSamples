@@ -1,6 +1,9 @@
 ﻿using System;
-using System.Text;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ClientTask
@@ -16,6 +19,7 @@ namespace ClientTask
         private TcpClient client;
         private NetworkStream stream;
         private bool isConnected;
+        private CancellationTokenSource cts;
 
         // 事件定义
         public event ConnectedHandler OnConnect;
@@ -32,9 +36,10 @@ namespace ClientTask
             OnError += (error) => Debug.LogError($"Event: Error: {error.Message}");
         }
 
-        void Start()
+        async void Start()
         {
-            ConnectToServer(GameConfigs.SERVER_IP, GameConfigs.SERVER_PORT);
+            cts = new CancellationTokenSource();
+            await ConnectToServerAsync(GameConfigs.SERVER_IP, GameConfigs.SERVER_PORT);
         }
 
         void OnDestroy()
@@ -42,94 +47,144 @@ namespace ClientTask
             Disconnect();
         }
 
-        void Update()
+        async void Update()
         {
             if (!isConnected) return;
 
+            // 示例：按下空格键发送消息
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                await SendMessageToServerAsync("Unity client pressed Space!");
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Disconnect();
+            }
+        }
+
+        async Task ConnectToServerAsync(string ipAddress, int port)
+        {
             try
             {
-                // 检查是否有数据可读
-                if (stream.DataAvailable)
-                {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    OnData?.Invoke(message);
-                    Debug.Log($"[S] Received from server: {message}");
-                }
+                client = new TcpClient();
+                await client.ConnectAsync(ipAddress, port).ConfigureAwait(false);
+                stream = client.GetStream();
+                isConnected = true;
+                OnConnect?.Invoke();
+                Debug.Log($"Connected to server: {ipAddress}:{port}");
 
-                // 示例：按下空格键发送消息
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    SendMessageToServer("Unity client pressed Space!");
-                }
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    Disconnect();
-                }
+                // 启动接收数据任务
+                _ = Task.Run(() => ReceiveDataAsync(cts.Token), cts.Token);
+
+                // 发送一条初始消息
+                await SendMessageToServerAsync("Hello from Unity Client!");
             }
             catch (SocketException se)
             {
                 OnError?.Invoke(se);
-                Debug.LogError($"Socket error in Update: {se.Message}");
+                Debug.LogError($"Socket error during connection: {se.Message}");
+                isConnected = false;
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e);
+                Debug.LogError($"Unexpected error during connection: {e.Message}");
+                isConnected = false;
+            }
+        }
+
+        private async Task ReceiveDataAsync(CancellationToken token)
+        {
+            try
+            {
+                while (isConnected && !token.IsCancellationRequested)
+                {
+                    if (stream.DataAvailable)
+                    {
+                        byte[] buffer = new byte[1024];
+                        int bytesRead = stream.Read(buffer, 0, buffer.Length); // 同步读取
+                        if (bytesRead == 0) // 服务器关闭连接
+                        {
+                            Disconnect();
+                            return;
+                        }
+                        string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                        OnData?.Invoke(message);
+                        Debug.Log($"Received from server: {message}");
+                    }
+                    else
+                    {
+                        // 避免高CPU占用
+                        await Task.Delay(10, token);
+                    }
+                }
+            }
+            catch (IOException ex) when (ex.InnerException is SocketException se && (se.SocketErrorCode == SocketError.OperationAborted))
+            {
+                Debug.LogError("Connection closed or aborted."); // 通过操作断开
+            }
+            catch (SocketException se)
+            {
+                OnError?.Invoke(se);
+                Debug.LogError($"Socket error in ReceiveDataAsync: {se.Message}");
                 Disconnect();
             }
             catch (System.IO.IOException ioe)
             {
                 OnError?.Invoke(ioe);
-                Debug.LogError($"IO error in Update: {ioe.Message}");
+                Debug.LogError($"IO error in ReceiveDataAsync: {ioe.Message}");
                 Disconnect();
+            }
+            catch (OperationCanceledException)
+            {
+                // 正常取消
             }
             catch (Exception e)
             {
                 OnError?.Invoke(e);
-                Debug.LogError($"Unexpected error in Update: {e.Message}");
+                Debug.LogError($"Unexpected error in ReceiveDataAsync: {e.Message}");
                 Disconnect();
             }
         }
 
-        void ConnectToServer(string ipAddress, int port)
+        async Task SendMessageToServerAsync(string message)
         {
-            try
-            {
-                client = new TcpClient();
-                client.Connect(ipAddress, port);
-                stream = client.GetStream();
-                isConnected = true;
-                OnConnect?.Invoke();
-                Debug.Log($"[C] Connected to server: {ipAddress}:{port}"); // 连接成功
+            if (!isConnected) return;
 
-                // 发送一条初始消息
-                //SendMessageToServer("Hello from Unity Client!");
-            }
-            catch (Exception e)
-            {
-                OnError?.Invoke(e);
-                Debug.LogError($"Connection error: {e.Message}");
-                isConnected = false;
-            }
-        }
-
-        void SendMessageToServer(string message)
-        {
             try
             {
                 byte[] data = Encoding.UTF8.GetBytes(message);
-                stream.Write(data, 0, data.Length);
-                Debug.Log($"[C] Sent to server: {message}");
+                await stream.WriteAsync(data, 0, data.Length, cts.Token).ConfigureAwait(false);
+                Debug.Log($"Sent to server: {message}");
+            }
+            catch (SocketException se)
+            {
+                OnError?.Invoke(se);
+                Debug.LogError($"Socket error while sending: {se.Message}");
+                Disconnect();
+            }
+            catch (System.IO.IOException ioe)
+            {
+                OnError?.Invoke(ioe);
+                Debug.LogError($"IO error while sending: {ioe.Message}");
+                Disconnect();
+            }
+            catch (OperationCanceledException)
+            {
+                // 正常取消
             }
             catch (Exception e)
             {
                 OnError?.Invoke(e);
-                Debug.LogError($"Send error: {e.Message}");
+                Debug.LogError($"Unexpected error while sending: {e.Message}");
                 Disconnect();
             }
         }
 
         [ContextMenu("Test Send")]
-        void SendMessage()
+        async void SendMessage()
         {
-            SendMessageToServer("Client send hello world test.");
+            await SendMessageToServerAsync("Client send hello world test.");
         }
 
         [ContextMenu("Test Disconnect")]
@@ -140,6 +195,7 @@ namespace ClientTask
             try
             {
                 isConnected = false;
+                cts?.Cancel();
                 stream?.Close();
                 client?.Close();
                 OnDisconnect?.Invoke();
@@ -149,6 +205,11 @@ namespace ClientTask
             {
                 OnError?.Invoke(e);
                 Debug.LogError($"Error during disconnection: {e.Message}");
+            }
+            finally
+            {
+                cts?.Dispose();
+                cts = null;
             }
         }
     }

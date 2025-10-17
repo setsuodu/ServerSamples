@@ -13,6 +13,7 @@ Assets/Examples
 		- OnConnect/OnDisconnect/OnData/OnError
 2. Thread: Async ues Thread, and stop by CancellationToken gracefully.
 3. Task: Async use Task, async-await.
+	- NetworkStream.Read 仍为阻塞调用，但通过 Task 实现异步运行
 4. Protobuf: Import Google.Protobuf, instead of binary.
 5. Actor: Bring a simple actor model to manage clients in server logic.
 

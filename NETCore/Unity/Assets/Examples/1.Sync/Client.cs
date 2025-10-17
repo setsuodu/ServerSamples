@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Text;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
 
 namespace ClientSync
@@ -67,6 +68,10 @@ namespace ClientSync
                 {
                     Disconnect();
                 }
+            }
+            catch (IOException ex) when (ex.InnerException is SocketException se && (se.SocketErrorCode == SocketError.OperationAborted))
+            {
+                Debug.LogError("Connection closed or aborted."); // 通过操作断开
             }
             catch (SocketException se)
             {
