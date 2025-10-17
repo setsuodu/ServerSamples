@@ -21,14 +21,14 @@ namespace TcpServerSync
             {
                 listener.Start();
                 isRunning = true;
-                Console.WriteLine($"Server started on {listener.LocalEndpoint}");
+                Console.WriteLine($"Server started on {listener.LocalEndpoint}"); // 服务器启动成功
 
                 while (isRunning)
                 {
                     Console.WriteLine("Waiting for a connection...");
                     // 阻塞等待客户端连接
                     TcpClient client = listener.AcceptTcpClient();
-                    Console.WriteLine($"Client connected: {client.Client.RemoteEndPoint}");
+                    Console.WriteLine($"[C] Client connected: {client.Client.RemoteEndPoint}"); // 监听到客户端连接成功
 
                     // 为每个客户端创建一个线程处理
                     Thread clientThread = new Thread(() => HandleClient(client));
@@ -56,13 +56,13 @@ namespace TcpServerSync
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine($"Received from client {client.Client.RemoteEndPoint}: {message}");
+                    Console.WriteLine($"[C] Received from client {client.Client.RemoteEndPoint}: {message}");
 
                     // 回送消息给客户端
                     string response = $"Server received: {message}";
                     byte[] responseData = Encoding.UTF8.GetBytes(response);
                     stream.Write(responseData, 0, responseData.Length);
-                    Console.WriteLine($"Sent to client: {response}");
+                    Console.WriteLine($"[S] Sent to client: {response}");
                 }
             }
             catch (Exception e)
@@ -72,7 +72,7 @@ namespace TcpServerSync
             finally
             {
                 client.Close();
-                Console.WriteLine($"Client disconnected: {client.Client.RemoteEndPoint}");
+                Console.WriteLine($"Client disconnected: {client.Client?.RemoteEndPoint}");
             }
         }
 

@@ -16,24 +16,9 @@ namespace ClientSync
             ConnectToServer(GameConfigs.SERVER_IP, GameConfigs.SERVER_PORT);
         }
 
-        void ConnectToServer(string ipAddress, int port)
+        void OnDestroy()
         {
-            try
-            {
-                client = new TcpClient();
-                client.Connect(ipAddress, port);
-                stream = client.GetStream();
-                isConnected = true;
-                Debug.Log($"Connected to server: {ipAddress}:{port}");
-
-                // 发送一条初始消息
-                SendMessageToServer("Hello from Unity Client!");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Connection error: {e.Message}");
-                isConnected = false;
-            }
+            Disconnect();
         }
 
         void Update()
@@ -48,13 +33,17 @@ namespace ClientSync
                     byte[] buffer = new byte[1024];
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Debug.Log($"Received from server: {message}");
+                    Debug.Log($"[S] Received from server: {message}");
                 }
 
                 // 示例：按下空格键发送消息
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     SendMessageToServer("Unity client pressed Space!");
+                }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    Disconnect();
                 }
             }
             catch (Exception e)
@@ -64,13 +53,33 @@ namespace ClientSync
             }
         }
 
+        void ConnectToServer(string ipAddress, int port)
+        {
+            try
+            {
+                client = new TcpClient();
+                client.Connect(ipAddress, port);
+                stream = client.GetStream();
+                isConnected = true;
+                Debug.Log($"[C] Connected to server: {ipAddress}:{port}"); // 连接成功
+
+                // 发送一条初始消息
+                //SendMessageToServer("Hello from Unity Client!");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Connection error: {e.Message}");
+                isConnected = false;
+            }
+        }
+
         void SendMessageToServer(string message)
         {
             try
             {
                 byte[] data = Encoding.UTF8.GetBytes(message);
                 stream.Write(data, 0, data.Length);
-                Debug.Log($"Sent to server: {message}");
+                Debug.Log($"[C] Sent to server: {message}");
             }
             catch (Exception e)
             {
@@ -79,17 +88,19 @@ namespace ClientSync
             }
         }
 
+        [ContextMenu("Test Send")]
+        void SendMessage()
+        {
+            SendMessageToServer("Client send hello world test.");
+        }
+
+        [ContextMenu("Test Disconnect")]
         void Disconnect()
         {
             isConnected = false;
             stream?.Close();
             client?.Close();
-            Debug.Log("Disconnected from server.");
-        }
-
-        void OnDestroy()
-        {
-            Disconnect();
+            Debug.Log("[C] Disconnected from server.");
         }
     }
 }

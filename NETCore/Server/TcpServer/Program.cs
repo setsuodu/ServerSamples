@@ -1,6 +1,4 @@
-﻿Console.WriteLine("Hello, World!");
-
-const string IP = "127.0.0.1";
+﻿const string IP = "127.0.0.1";
 const int PORT = 8080;
 
 /*{
