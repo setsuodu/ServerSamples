@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using UnityEngine;
 
-namespace ClientProtobuf
+namespace ClientActor
 {
     // 定义事件委托
     public delegate void ConnectedHandler();
@@ -100,7 +100,7 @@ namespace ClientProtobuf
             }
             catch (IOException ex) when (ex.InnerException is SocketException se && (se.SocketErrorCode == SocketError.OperationAborted))
             {
-                Debug.LogError("Connection closed or aborted.");  // 通过操作断开
+                //Debug.LogError("Connection closed or aborted.");  // 通过操作断开
             }
             catch (SocketException se)
             {

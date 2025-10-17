@@ -38,6 +38,8 @@ Assets/Examples
 	- NetworkStream.Read 仍为阻塞调用，但通过 Task 实现异步运行
 4. Protobuf: Import Google.Protobuf, instead of binary.
 5. Actor: Bring a simple actor model to manage clients in server logic.
+	- PlayerManager就是Actor模型。每个客户端独立处理、跟踪、管理。
+	- 客户端也添加 PlayerManager，管理房间队友。
 
 # Test
 > Compeletly test Client/Server Operate Connect/Send/Recv/Disconnect, then next..

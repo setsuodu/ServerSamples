@@ -65,3 +65,15 @@ const int PORT = 8080;
 
     await server.StartAsync();
 }
+// 5.Actor
+{
+    TcpServerActor.TcpServer server = new TcpServerActor.TcpServer(IP, PORT);
+
+    // 订阅事件
+    server.OnConnect += (client) => Console.WriteLine($"Event: Client {client.Client.RemoteEndPoint} connected.");
+    server.OnDisconnect += (client, user_info) => Console.WriteLine($"Event: Client {client.Client?.RemoteEndPoint} disconnected.");
+    server.OnData += (client, user_info, id, msg) => Console.WriteLine($"Event: Data from {client.Client?.RemoteEndPoint}, ID={id}, Message={msg}");
+    server.OnError += (client, error) => Console.WriteLine($"Event: Error {(client != null ? $"from {client.Client?.RemoteEndPoint}" : "on server")}: {error.Message}");
+
+    await server.StartAsync();
+}
