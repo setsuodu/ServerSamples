@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace TcpServerSync
+namespace TcpServerTask
 {
     // 定义事件委托
     public delegate void ClientConnectedHandler(TcpClient client);

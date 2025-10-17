@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Net.Sockets;
-using System.Threading;
 using UnityEngine;
 
-namespace ClientThread
+namespace ClientTask
 {
     // 定义事件委托
     public delegate void ConnectedHandler();
@@ -17,8 +16,6 @@ namespace ClientThread
         private TcpClient client;
         private NetworkStream stream;
         private bool isConnected;
-        private CancellationTokenSource cts;
-        private Thread receiveThread;
 
         // 事件定义
         public event ConnectedHandler OnConnect;
@@ -37,7 +34,6 @@ namespace ClientThread
 
         void Start()
         {
-            cts = new CancellationTokenSource();
             ConnectToServer(GameConfigs.SERVER_IP, GameConfigs.SERVER_PORT);
         }
 
@@ -50,13 +46,44 @@ namespace ClientThread
         {
             if (!isConnected) return;
 
-            // 示例：按下空格键发送消息
-            if (Input.GetKeyDown(KeyCode.Space))
+            try
             {
-                SendMessageToServer("Unity client pressed Space!");
+                // 检查是否有数据可读
+                if (stream.DataAvailable)
+                {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    OnData?.Invoke(message);
+                    Debug.Log($"[S] Received from server: {message}");
+                }
+
+                // 示例：按下空格键发送消息
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    SendMessageToServer("Unity client pressed Space!");
+                }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    Disconnect();
+                }
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
+            catch (SocketException se)
             {
+                OnError?.Invoke(se);
+                Debug.LogError($"Socket error in Update: {se.Message}");
+                Disconnect();
+            }
+            catch (System.IO.IOException ioe)
+            {
+                OnError?.Invoke(ioe);
+                Debug.LogError($"IO error in Update: {ioe.Message}");
+                Disconnect();
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e);
+                Debug.LogError($"Unexpected error in Update: {e.Message}");
                 Disconnect();
             }
         }
@@ -72,10 +99,6 @@ namespace ClientThread
                 OnConnect?.Invoke();
                 Debug.Log($"[C] Connected to server: {ipAddress}:{port}"); // 连接成功
 
-                // 启动接收数据线程
-                receiveThread = new Thread(() => ReceiveData(cts.Token));
-                receiveThread.Start();
-
                 // 发送一条初始消息
                 //SendMessageToServer("Hello from Unity Client!");
             }
@@ -84,52 +107,6 @@ namespace ClientThread
                 OnError?.Invoke(e);
                 Debug.LogError($"Connection error: {e.Message}");
                 isConnected = false;
-            }
-        }
-
-        private void ReceiveData(CancellationToken token)
-        {
-            try
-            {
-                while (isConnected && !token.IsCancellationRequested)
-                {
-                    if (stream.DataAvailable)
-                    {
-                        byte[] buffer = new byte[1024];
-                        int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                        if (bytesRead == 0) // 服务器关闭连接
-                        {
-                            Disconnect();
-                            return;
-                        }
-                        string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        OnData?.Invoke(message);
-                        Debug.Log($"Received from server: {message}");
-                    }
-                    else
-                    {
-                        // 避免高CPU占用
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-            catch (SocketException se)
-            {
-                OnError?.Invoke(se);
-                Debug.LogError($"Socket error in ReceiveData: {se.Message}");
-                Disconnect();
-            }
-            catch (System.IO.IOException ioe)
-            {
-                OnError?.Invoke(ioe);
-                Debug.LogError($"IO error in ReceiveData: {ioe.Message}");
-                Disconnect();
-            }
-            catch (Exception e)
-            {
-                OnError?.Invoke(e);
-                Debug.LogError($"Unexpected error in ReceiveData: {e.Message}");
-                Disconnect();
             }
         }
 
@@ -163,7 +140,6 @@ namespace ClientThread
             try
             {
                 isConnected = false;
-                cts?.Cancel();
                 stream?.Close();
                 client?.Close();
                 OnDisconnect?.Invoke();
@@ -173,11 +149,6 @@ namespace ClientThread
             {
                 OnError?.Invoke(e);
                 Debug.LogError($"Error during disconnection: {e.Message}");
-            }
-            finally
-            {
-                cts?.Dispose();
-                cts = null;
             }
         }
     }

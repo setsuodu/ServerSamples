@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace TcpServerSync
+namespace TcpServerThread
 {
     // 定义事件委托
     public delegate void ClientConnectedHandler(TcpClient client);
@@ -15,6 +15,7 @@ namespace TcpServerSync
     {
         private TcpListener listener;
         private bool isRunning;
+        private CancellationTokenSource cts;
 
         // 事件定义
         public event ClientConnectedHandler OnConnect;
@@ -25,6 +26,7 @@ namespace TcpServerSync
         public TcpServer(string ipAddress, int port)
         {
             listener = new TcpListener(IPAddress.Parse(ipAddress), port);
+            cts = new CancellationTokenSource();
         }
 
         public void Start()
@@ -35,18 +37,10 @@ namespace TcpServerSync
                 isRunning = true;
                 Console.WriteLine($"Server started on {listener.LocalEndpoint}"); // 服务器启动成功
 
-                while (isRunning)
-                {
-                    Console.WriteLine("Waiting for a connection...");
-                    // 阻塞等待客户端连接
-                    TcpClient client = listener.AcceptTcpClient();
-                    OnConnect?.Invoke(client);
-                    Console.WriteLine($"[C] Client connected: {client.Client.RemoteEndPoint}"); // 监听到客户端连接成功
 
-                    // 为每个客户端创建一个线程处理
-                    Thread clientThread = new Thread(() => HandleClient(client));
-                    clientThread.Start();
-                }
+                // 启动异步线程接受客户端连接
+                Thread acceptThread = new Thread(() => AcceptClients(cts.Token));
+                acceptThread.Start();
             }
             catch (Exception e)
             {
@@ -55,32 +49,71 @@ namespace TcpServerSync
             }
         }
 
-        private void HandleClient(TcpClient client)
+        private void AcceptClients(CancellationToken token)
         {
             try
             {
-                NetworkStream stream = client.GetStream();
-                byte[] buffer = new byte[1024];
-
-                while (client.Connected)
+                while (isRunning && !token.IsCancellationRequested)
                 {
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead == 0)
+                    try
                     {
-                        Console.WriteLine($"客户端主动断开");
-                        //OnDisconnect?.Invoke(client); //客户端发送Disconnect，在这里收到。这里不处理，放到finally去。
+                        // 阻塞等待客户端连接
+                        TcpClient client = listener.AcceptTcpClient();
+                        OnConnect?.Invoke(client);
+                        Console.WriteLine($"Client connected: {client.Client.RemoteEndPoint}");
+
+                        // 为每个客户端启动新线程处理
+                        Thread clientThread = new Thread(() => HandleClient(client, token));
+                        clientThread.Start();
+                    }
+                    catch (SocketException se) when (se.SocketErrorCode == SocketError.Interrupted)
+                    {
+                        // 正常中断（服务器关闭）
                         break;
                     }
+                    catch (SocketException se)
+                    {
+                        OnError?.Invoke(null, se);
+                        Console.WriteLine($"Socket error accepting client: {se.Message}");
+                    }
+                    catch (Exception e)
+                    {
+                        OnError?.Invoke(null, e);
+                        Console.WriteLine($"Unexpected error accepting client: {e.Message}");
+                    }
+                }
+            }
+            finally
+            {
+                if (isRunning)
+                    Stop();
+            }
+        }
+
+        private void HandleClient(TcpClient client, CancellationToken token)
+        {
+            NetworkStream stream = null;
+            try
+            {
+                stream = client.GetStream();
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+
+                while (!token.IsCancellationRequested)
+                {
+                    bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead == 0) // 客户端正常关闭连接
+                        break;
 
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     OnData?.Invoke(client, message);
-                    Console.WriteLine($"[C] Received from client {client.Client.RemoteEndPoint}: {message}");
+                    Console.WriteLine($"Received from client {client.Client.RemoteEndPoint}: {message}");
 
                     // 回送消息给客户端
                     string response = $"Server received: {message}";
                     byte[] responseData = Encoding.UTF8.GetBytes(response);
                     stream.Write(responseData, 0, responseData.Length);
-                    Console.WriteLine($"[S] Sent to client: {response}");
+                    Console.WriteLine($"Sent to client: {response}");
                 }
             }
             catch (SocketException se)
@@ -101,7 +134,8 @@ namespace TcpServerSync
             finally
             {
                 OnDisconnect?.Invoke(client);
-                client.Close();
+                stream?.Close();
+                client?.Close();
                 Console.WriteLine($"Client disconnected: {client.Client?.RemoteEndPoint}");
             }
         }
@@ -111,6 +145,7 @@ namespace TcpServerSync
             try
             {
                 isRunning = false;
+                cts?.Cancel();
                 listener?.Stop();
                 Console.WriteLine("Server stopped.");
             }
@@ -118,6 +153,11 @@ namespace TcpServerSync
             {
                 OnError?.Invoke(null, e);
                 Console.WriteLine($"Error stopping server: {e.Message}");
+            }
+            finally
+            {
+                cts?.Dispose();
+                cts = null;
             }
         }
     }
