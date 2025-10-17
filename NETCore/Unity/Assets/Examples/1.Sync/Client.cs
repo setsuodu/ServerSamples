@@ -5,11 +5,32 @@ using UnityEngine;
 
 namespace ClientSync
 {
+    // 定义事件委托
+    public delegate void ConnectedHandler();
+    public delegate void DisconnectedHandler();
+    public delegate void DataReceivedHandler(string data);
+    public delegate void ClientErrorHandler(Exception error);
+
     public class Client : MonoBehaviour
     {
         private TcpClient client;
         private NetworkStream stream;
         private bool isConnected;
+
+        // 事件定义
+        public event ConnectedHandler OnConnect;
+        public event DisconnectedHandler OnDisconnect;
+        public event DataReceivedHandler OnData;
+        public event ClientErrorHandler OnError;
+
+        // 示例：订阅事件
+        void Awake()
+        {
+            OnConnect += () => Debug.Log("Event: Connected to server.");
+            OnDisconnect += () => Debug.Log("Event: Disconnected from server.");
+            OnData += (data) => Debug.Log($"Event: Received data: {data}");
+            OnError += (error) => Debug.LogError($"Event: Error: {error.Message}");
+        }
 
         void Start()
         {
@@ -33,6 +54,7 @@ namespace ClientSync
                     byte[] buffer = new byte[1024];
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    OnData?.Invoke(message);
                     Debug.Log($"[S] Received from server: {message}");
                 }
 
@@ -46,9 +68,22 @@ namespace ClientSync
                     Disconnect();
                 }
             }
+            catch (SocketException se)
+            {
+                OnError?.Invoke(se);
+                Debug.LogError($"Socket error in Update: {se.Message}");
+                Disconnect();
+            }
+            catch (System.IO.IOException ioe)
+            {
+                OnError?.Invoke(ioe);
+                Debug.LogError($"IO error in Update: {ioe.Message}");
+                Disconnect();
+            }
             catch (Exception e)
             {
-                Debug.LogError($"Error in Update: {e.Message}");
+                OnError?.Invoke(e);
+                Debug.LogError($"Unexpected error in Update: {e.Message}");
                 Disconnect();
             }
         }
@@ -61,6 +96,7 @@ namespace ClientSync
                 client.Connect(ipAddress, port);
                 stream = client.GetStream();
                 isConnected = true;
+                OnConnect?.Invoke();
                 Debug.Log($"[C] Connected to server: {ipAddress}:{port}"); // 连接成功
 
                 // 发送一条初始消息
@@ -68,6 +104,7 @@ namespace ClientSync
             }
             catch (Exception e)
             {
+                OnError?.Invoke(e);
                 Debug.LogError($"Connection error: {e.Message}");
                 isConnected = false;
             }
@@ -83,6 +120,7 @@ namespace ClientSync
             }
             catch (Exception e)
             {
+                OnError?.Invoke(e);
                 Debug.LogError($"Send error: {e.Message}");
                 Disconnect();
             }
@@ -97,10 +135,21 @@ namespace ClientSync
         [ContextMenu("Test Disconnect")]
         void Disconnect()
         {
-            isConnected = false;
-            stream?.Close();
-            client?.Close();
-            Debug.Log("[C] Disconnected from server.");
+            if (!isConnected) return;
+
+            try
+            {
+                isConnected = false;
+                stream?.Close();
+                client?.Close();
+                OnDisconnect?.Invoke();
+                Debug.Log("Disconnected from server.");
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e);
+                Debug.LogError($"Error during disconnection: {e.Message}");
+            }
         }
     }
 }
