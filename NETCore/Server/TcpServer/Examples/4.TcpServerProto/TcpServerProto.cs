@@ -107,9 +107,9 @@ namespace TcpServerProto
             // 根据消息号解析 Protobuf 消息
             IMessage message = (MsgId)messageId switch
             {
-                MsgId.C2SLogin => LoginRequest.Parser.ParseFrom(protoData),
-                MsgId.C2SLogout => EmptyRequest.Parser.ParseFrom(protoData),
-                MsgId.C2SGetFriendList => FriendListRequest.Parser.ParseFrom(protoData),
+                MsgId.C2S_LOGIN => LoginRequest.Parser.ParseFrom(protoData),
+                MsgId.C2S_LOGOUT => EmptyRequest.Parser.ParseFrom(protoData),
+                MsgId.C2S_FRIENDLIST => FriendListRequest.Parser.ParseFrom(protoData),
                 _ => throw new Exception($"Unknown message ID: {messageId}")
             };
 
@@ -120,10 +120,10 @@ namespace TcpServerProto
         {
             switch ((MsgId)messageId)
             {
-                case MsgId.C2SLogin:
+                case MsgId.C2S_LOGIN:
                     await HandleLoginAsync(client, stream, message as LoginRequest);
                     break;
-                case MsgId.C2SLogout:
+                case MsgId.C2S_LOGOUT:
                     await HandleLogoutAsync(client, stream, message as EmptyRequest);
                     break;
                 default:
@@ -172,17 +172,17 @@ namespace TcpServerProto
                 Code = 0
             };
 
-            await SendMessageAsync(stream, (int)MsgId.S2CLoginResult, response);
+            await SendMessageAsync(stream, (int)MsgId.S2C_LOGIN, response);
         }
 
         private async Task HandleLogoutAsync(TcpClient client, NetworkStream stream, EmptyRequest request)
         {
-            Console.WriteLine($"Handling LogoutRequest");
+            Console.WriteLine($"Handling LogoutRequest: client=用户名？");
 
             // 模拟查询逻辑
             var response = new LogoutResponse { Code = 0 };
 
-            await SendMessageAsync(stream, (int)MsgId.S2CLogoutResult, response);
+            await SendMessageAsync(stream, (int)MsgId.S2C_LOGOUT, response);
         }
 
         #endregion

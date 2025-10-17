@@ -1,3 +1,25 @@
+# TODO:
+1. 服务器PlayerManager管理，客户端消息不发UserId，通过Client连接获取UserId。
+2. proto 默认生成的 C# 代码：会去掉下划线，且变成驼峰命名。
+```
+// .proto 文件
+enum UserStatus {
+  USER_OFFLINE = 0;
+  USER_ONLINE = 1;
+  USER_AWAY = 2;
+}
+```
+```
+// .cs 文件，大写+驼峰
+public enum UserStatus
+{
+    UserOffline = 0,
+    UserOnline = 1,
+    UserAway = 2
+}
+```
+消息号且不依赖Protobuf，也不涉及前后端跨语言，建议直接在C#中定义。避免proto转换后命名格式变化问题。
+
 # Introduce
 Assets/Examples
 1. Sync: How to use TcpListener, TcpClient basically. Sync Blcok.

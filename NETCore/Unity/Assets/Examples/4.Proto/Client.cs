@@ -54,7 +54,7 @@ namespace ClientProtobuf
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 var cmd = new LoginRequest { Username = "Test1", Password = "123456" };
-                await SendMessageAsync((int)MsgId.C2SLogin, cmd);
+                await SendMessageAsync((int)MsgId.C2S_LOGIN, cmd);
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -128,8 +128,8 @@ namespace ClientProtobuf
             // 根据消息号解析 Protobuf 消息
             IMessage message = (MsgId)messageId switch
             {
-                MsgId.S2CLoginResult => LoginResponse.Parser.ParseFrom(protoData),
-                MsgId.S2CLogoutResult => LogoutResponse.Parser.ParseFrom(protoData),
+                MsgId.S2C_LOGIN => LoginResponse.Parser.ParseFrom(protoData),
+                MsgId.S2C_LOGOUT => LogoutResponse.Parser.ParseFrom(protoData),
                 _ => throw new Exception($"Unknown message ID: {messageId}")
             };
 
@@ -140,10 +140,10 @@ namespace ClientProtobuf
         {
             switch ((MsgId)messageId)
             {
-                case MsgId.S2CLoginResult:
+                case MsgId.S2C_LOGIN:
                     await HandleLoginResponseAsync(message as LoginResponse);
                     break;
-                case MsgId.S2CLogoutResult:
+                case MsgId.S2C_LOGOUT:
                     await HandleQueryResponseAsync(message as LogoutResponse);
                     break;
                 default:

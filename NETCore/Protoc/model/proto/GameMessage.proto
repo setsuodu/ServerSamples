@@ -1,18 +1,5 @@
 syntax = "proto3";
 
-// 定义消息号枚举
-enum MsgId {
-    None = 0;
-	///////////////////////////////////////////////
-    C2S_Login = 1; //登录请求
-    C2S_Logout = 2; //登出请求
-    C2S_GetFriendList = 3; //好友列表请求
-	///////////////////////////////////////////////
-    S2C_LoginResult	= 4; //登录结果
-    S2C_LogoutResult = 5; //登出结果
-    S2C_FriendList = 6; //好友列表结果
-}
-
 message EmptyRequest {}
 
 // 登录请求
