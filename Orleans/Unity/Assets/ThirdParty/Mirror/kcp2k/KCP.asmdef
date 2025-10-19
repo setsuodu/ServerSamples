@@ -1,0 +1,16 @@
+{
+    "name": "kcp",
+    "rootNamespace": "",
+    "references": [
+        "GUID:422788ef152ddcf49b168379157c3944"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
