@@ -13,6 +13,8 @@
 		- Microsoft.AspNetCore.SignalR.Common
 		- Microsoft.Extensions.DependencyInjection.Abstractions
 		- Microsoft.Extensions.Options
+		- ... See More in [Assets/Plugins].
+	- 创建 link.xml，配置动态库引用
 2. Nuget导入：
 	a. Unity
 	b. ASP.NET Core
