@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR; //ASP.NET Core 8.0 内置了，不需要NuGet获取
+using SignalRServer.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 
 var app = builder.Build();
+//app.UseHttpsRedirection();
 
 // 配置 Hub 路由
-app.MapHub<SignalRServer.Hubs.ChatHub>("/hub");
+app.MapHub<ChatHub>("/chathub");
+
+app.MapGet("/", () => "SignalR Server Running!");
 
 app.Run();
