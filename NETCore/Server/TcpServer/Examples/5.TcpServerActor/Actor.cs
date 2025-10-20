@@ -59,30 +59,72 @@ public abstract class Actor
     {
         target._mailbox.Enqueue(new Envelope { Message = message, Sender = this });
     }
-
+    // 信件
     protected class Envelope
     {
-        public object Message { get; set; }
-        public Actor Sender { get; set; }
+        public object Message { get; set; } // 消息内容
+        public Actor Sender { get; set; } // 发件人
     }
 }
 
-// 玩家Actor消息定义
+// PlayerActor消息定义
 public class PlayerMessages
 {
-    public class Connect { public TcpClient Client { get; set; } }
+    // 连接消息
+    public class Connect
+    {
+        public TcpClient Client { get; set; }
+    }
+    // 断开连接消息
     public class Disconnect { }
-    public class DataReceived { public int MessageId { get; set; } public IMessage Message { get; set; } }
-    public class SendToClient { public int MessageId { get; set; } public IMessage Message { get; set; } }
-    public class GetPlayerInfo { public UserInfo UserInfo { get; set; } }
+    // 数据接收消息
+    public class DataReceived
+    {
+        public int MessageId { get; set; }
+        public IMessage Message { get; set; }
+    }
+    // 发送到客户端消息
+    public class SendToClient
+    {
+        public int MessageId { get; set; }
+        public IMessage Message { get; set; }
+    }
+    // 获取玩家信息消息
+    public class GetPlayerInfo
+    {
+        public UserInfo UserInfo { get; set; }
+    }
 }
 
 // PlayerManager消息定义
 public class ManagerMessages
 {
-    public class CreatePlayer { public TcpClient Client { get; set; } public TaskCompletionSource<PlayerActor> Completion { get; set; } }
-    public class RemovePlayer { public PlayerActor Player { get; set; } }
-    public class GetPlayerByClient { public TcpClient Client { get; set; } public TaskCompletionSource<PlayerActor> Completion { get; set; } }
-    public class BroadcastMessage { public int MessageId { get; set; } public IMessage Message { get; set; } }
-    public class GetAllPlayers { public TaskCompletionSource<PlayerActor[]> Completion { get; set; } }
+    // 创建玩家消息
+    public class CreatePlayer
+    {
+        public TcpClient Client { get; set; }
+        public TaskCompletionSource<PlayerActor> Completion { get; set; }
+    }
+    // 移除玩家消息
+    public class RemovePlayer
+    {
+        public PlayerActor Player { get; set; }
+    }
+    // 通过TcpClient获取玩家消息
+    public class GetPlayerByClient
+    {
+        public TcpClient Client { get; set; }
+        public TaskCompletionSource<PlayerActor> Completion { get; set; }
+    }
+    // 广播消息
+    public class BroadcastMessage
+    {
+        public int MessageId { get; set; }
+        public IMessage Message { get; set; }
+    }
+    // 获取所有玩家消息
+    public class GetAllPlayers
+    {
+        public TaskCompletionSource<PlayerActor[]> Completion { get; set; }
+    }
 }

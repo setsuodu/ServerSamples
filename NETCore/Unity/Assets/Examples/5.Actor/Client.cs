@@ -42,8 +42,11 @@ namespace ClientActor
 
         void OnDestroy()
         {
-            //Disconnect();
-            DisconnectAsync().GetAwaiter().GetResult(); //？？
+            // 通常在无法使用 async/await 的场景中使用，例如在同步方法中需要调用异步方法并获取结果。
+            // 阻塞线程：GetResult() 会阻塞当前线程，可能导致性能问题或死锁（尤其是在 UI 线程或 ASP.NET 经典环境中）。
+            // 不推荐：在可以的情况下，优先使用 async/await，因为它更符合异步编程模型，避免阻塞。
+            // 异常处理：需要用 try-catch 捕获 AggregateException
+            DisconnectAsync().GetAwaiter().GetResult(); // 阻塞直到任务完成
         }
 
         async void Update()
@@ -58,8 +61,7 @@ namespace ClientActor
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                //Disconnect();
-                DisconnectAsync().GetAwaiter().GetResult(); //？？
+                DisconnectAsync().GetAwaiter().GetResult();
             }
         }
 
@@ -221,8 +223,8 @@ namespace ClientActor
                 client?.Close();
                 OnDisconnect?.Invoke();
                 Debug.Log("Disconnected from server.");
-                //await Task.WhenAll(); //？？
-                await Task.CompletedTask;
+                //await Task.WhenAll(task1, task2, ...); // 等待所有任务完成
+                await Task.CompletedTask; // Task中没有实际的异步操作时用这个
             }
         }
     }
