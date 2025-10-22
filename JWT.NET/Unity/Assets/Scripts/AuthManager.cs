@@ -3,22 +3,24 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
-using Newtonsoft.Json; // 需要安装 Newtonsoft.Json（Unity包管理器可装）
+using Newtonsoft.Json;
 
 public class AuthManager : MonoBehaviour
 {
-    private string baseUrl = "http://localhost:5015/api/auth";
-    public string JwtToken { get; private set; }
+    public string AccessToken;
+    public string RefreshToken;
 
+    private string baseUrl = "http://localhost:5015/api/auth";
+
+
+    // 登录获取令牌
     public IEnumerator Login(string username, string password)
     {
         var body = new { Username = username, Password = password };
-        string json = JsonConvert.SerializeObject(body);
-
-        using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/login", "POST"))
+        var json = JsonConvert.SerializeObject(body);
+        using (var request = new UnityWebRequest(baseUrl + "/login", "POST"))
         {
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
@@ -27,8 +29,9 @@ public class AuthManager : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 var response = JsonConvert.DeserializeObject<LoginResponse>(request.downloadHandler.text);
-                JwtToken = response.token;
-                Debug.Log("JWT: " + JwtToken);
+                AccessToken = response.AccessToken;
+                RefreshToken = response.RefreshToken;
+                Debug.Log("Login Success");
             }
             else
             {
@@ -37,21 +40,68 @@ public class AuthManager : MonoBehaviour
         }
     }
 
+    // 调用接口时自动刷新过期的 Token
     public IEnumerator GetProtectedData()
     {
-        using (UnityWebRequest request = new UnityWebRequest("http://localhost:5015/api/values", "GET"))
+        string url = "http://localhost:5015/api/values";
+
+        using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Authorization", "Bearer " + JwtToken);
+            request.SetRequestHeader("Authorization", "Bearer " + AccessToken);
+            yield return request.SendWebRequest();
+
+            if (request.responseCode == 401) // token失效
+            {
+                Debug.Log("Access token expired, refreshing...");
+                yield return RefreshAccessToken();
+
+                // 重试请求
+                using (var retryRequest = new UnityWebRequest(url, "GET"))
+                {
+                    retryRequest.downloadHandler = new DownloadHandlerBuffer();
+                    retryRequest.SetRequestHeader("Authorization", "Bearer " + AccessToken);
+                    yield return retryRequest.SendWebRequest();
+
+                    if (retryRequest.result == UnityWebRequest.Result.Success)
+                        Debug.Log("Data: " + retryRequest.downloadHandler.text);
+                    else
+                        Debug.LogError("Error after refresh: " + retryRequest.error);
+                }
+            }
+            else
+            {
+                Debug.Log("Data: " + request.downloadHandler.text);
+            }
+        }
+    }
+    private IEnumerator RefreshAccessToken()
+    {
+        var body = new { RefreshToken = RefreshToken };
+        var json = JsonConvert.SerializeObject(body);
+        using (var request = new UnityWebRequest(baseUrl + "/refresh", "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
-                Debug.Log("Data: " + request.downloadHandler.text);
+            {
+                var response = JsonConvert.DeserializeObject<LoginResponse>(request.downloadHandler.text);
+                AccessToken = response.AccessToken;
+                RefreshToken = response.RefreshToken;
+                Debug.Log("Access token refreshed");
+            }
             else
-                Debug.LogError("Error: " + request.error);
+            {
+                Debug.LogError("Failed to refresh token: " + request.error);
+            }
         }
     }
 
+
+    #region GUI Test
     public InputField m_usernameInput;
     public InputField m_passwordInput;
     public void OnLoginClick()
@@ -62,10 +112,5 @@ public class AuthManager : MonoBehaviour
     {
         StartCoroutine(GetProtectedData());
     }
-}
-
-[System.Serializable]
-public class LoginResponse
-{
-    public string token;
+    #endregion
 }
