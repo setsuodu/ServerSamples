@@ -146,3 +146,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 	builder.Services.AddDbContext<AppDbContext>(options =>
 		options.UseNpgsql(connectionString));
 	```
+	
+## 项目改容器
+
+.csproj 项目上（注意：不是sln解决方案）右键 / 添加 / Docker 支持...
+
+Visual Studio 会自动生成以下文件：
+- Dockerfile：描述容器构建过程。
+- .dockerignore：指定忽略的文件/文件夹。
+- （可选）docker-compose.yml：如果选择启用 Docker Compose。
+
+Windows上构建，docker build
+👈必须确保安装 Docker Desktop for Windows
+👈必须确保安装 WSL2
+👈必须确保开启 Visual Machine / VM
