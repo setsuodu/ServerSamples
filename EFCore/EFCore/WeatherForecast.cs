@@ -1,4 +1,4 @@
-namespace GameServer
+namespace EFCore
 {
     public class WeatherForecast
     {

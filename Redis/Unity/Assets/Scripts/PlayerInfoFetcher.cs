@@ -13,8 +13,8 @@ public class PlayerData
 
 public class PlayerInfoFetcher : MonoBehaviour
 {
-    //private const string baseUrl = "https://localhost:7081/api/player/";
-    private const string baseUrl = "http://localhost:5025/api/player/";
+    private const string baseUrl = "https://localhost:7081/api/player/";
+    //private const string baseUrl = "http://localhost:5025/api/player/";
 
     void Start()
     {
