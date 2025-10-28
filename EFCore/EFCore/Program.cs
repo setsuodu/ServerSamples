@@ -6,9 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"[SQL] {connectionString}"); // 检查来自json 还是环境变量
+
 // 注册 DbContext
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<GameDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 

@@ -19,8 +19,9 @@ psql --version
 1. 创建ASP.NET Core Web API模板项目， .net 8.0（LTS），https（√）
 2. 安装 NuGet包，
 ```
-dotnet add package Microsoft.EntityFrameworkCore //核心包，实现对象关系映射 (ORM)
 dotnet add package Microsoft.EntityFrameworkCore.Design //实现设计、数据迁移
+dotnet add package Microsoft.EntityFrameworkCore.Tools  ## 不要这样加！！作为内部实现，已经通过👆👆.Design依赖添加了
+dotnet add package Microsoft.EntityFrameworkCore ## 不要这样加！！ 核心包，实现对象关系映射 (ORM)，已经在👇👇.PostgreSQL 包依赖
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL //EFCore与PgSQL交互
 ```
 3. 配置appsettings.json

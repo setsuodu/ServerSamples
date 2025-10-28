@@ -1,21 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿// Models/User.cs
 public class User
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
+    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
 
-    [Required]
-    [StringLength(50)]
-    public string Username { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool IsBanned { get; set; } = false;
+    public DateTime? BannedUntil { get; set; }
+    public string? BannedReason { get; set; }
 
-    [Required]
-    [EmailAddress]
-    [StringLength(100)]
-    public string Email { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
-    [Required]
-    [StringLength(256)]
-    public string PasswordHash { get; set; }
+    // 导航属性
+    public ICollection<Character> Characters { get; set; } = new List<Character>();
+    public ICollection<LoginLog> LoginLogs { get; set; } = new List<LoginLog>();
+    public ICollection<ThirdPartyLogin> ThirdPartyLogins { get; set; } = new List<ThirdPartyLogin>();
+    public ICollection<BanRecord> BanRecords { get; set; } = new List<BanRecord>();
 
-    public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
+    // 我发起的好友关系
+    public ICollection<Friend> Friends { get; set; } = new List<Friend>();
+
+    // 别人加我的（我被加为好友）
+    public ICollection<Friend> FriendOf { get; set; } = new List<Friend>();
 }

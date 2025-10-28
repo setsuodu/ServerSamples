@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly GameDbContext _context;
 
-    public ProductsController(AppDbContext context)
+    public ProductsController(GameDbContext context)
     {
         _context = context;
     }
-
+    /*
     // GET: api/Products
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
@@ -27,4 +27,5 @@ public class ProductsController : ControllerBase
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetProducts), new { id = product.Id }, product);
     }
+    */
 }
