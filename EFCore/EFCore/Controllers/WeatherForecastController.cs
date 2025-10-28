@@ -1,3 +1,4 @@
+﻿using EFCore.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFCore.Controllers

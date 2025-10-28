@@ -1,4 +1,4 @@
-namespace EFCore
+﻿namespace EFCore.Models
 {
     public class WeatherForecast
     {

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EFCore.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitGameSystem : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -89,6 +89,38 @@ namespace EFCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "friends",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    friend_user_id = table.Column<long>(type: "bigint", nullable: false),
+                    status = table.Column<short>(type: "smallint", nullable: false),
+                    apply_message = table.Column<string>(type: "text", nullable: true),
+                    remark_name = table.Column<string>(type: "text", nullable: true),
+                    friend_group = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("p_k_friends", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_friends_users_friend_user_id",
+                        column: x => x.friend_user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_friends_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "login_logs",
                 columns: table => new
                 {
@@ -154,6 +186,27 @@ namespace EFCore.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_friends_created_at",
+                table: "friends",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_friends_friend_user_id",
+                table: "friends",
+                column: "friend_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_friends_status",
+                table: "friends",
+                column: "status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_friends_user_id_friend_user_id",
+                table: "friends",
+                columns: new[] { "user_id", "friend_user_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_login_logs_user_id",
                 table: "login_logs",
                 column: "user_id");
@@ -190,6 +243,9 @@ namespace EFCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "characters");
+
+            migrationBuilder.DropTable(
+                name: "friends");
 
             migrationBuilder.DropTable(
                 name: "login_logs");
