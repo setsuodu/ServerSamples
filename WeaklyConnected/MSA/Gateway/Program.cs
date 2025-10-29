@@ -1,0 +1,49 @@
+﻿// src/ApiGateway/Program.cs
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. 添加 Ocelot
+builder.Services.AddOcelot();
+
+// 2. 全局 JWT 验证（可选：只在网关验证一次）
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
+var key = Encoding.UTF8.GetBytes(jwtKey);
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false; // 开发环境
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard",
+        ValidAudience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard",
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.FromMinutes(5)
+    };
+});
+
+var app = builder.Build();
+
+// 启用中间件
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// 使用 Ocelot
+app.UseOcelot().Wait();
+
+app.Run();

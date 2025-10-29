@@ -9,6 +9,8 @@ namespace EFCore.Data
     {
         public GameDbContext(DbContextOptions<GameDbContext> options) : base(options) { }
 
+        public DbSet<Product> Products => Set<Product>(); // 演示 CRUD
+
         public DbSet<User> Users => Set<User>();
         public DbSet<Character> Characters => Set<Character>();
         public DbSet<LoginLog> LoginLogs => Set<LoginLog>();
