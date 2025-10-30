@@ -21,12 +21,15 @@
     └── Properties/launchSettings.json (端口: 5000)
 3. 默认是单项目启动，修改sln属性👉多个启动项目(M):
 |项目|操作|
-|--|--|
+|---|---|
 |ApiGateway    |开始|
 |ProductService|开始|
 |OrderService  |开始|
 新建配置文件：重命名为DebugAll👉确定
-4. 
+4. 测试请求
+http://localhost:5000/products
+http://localhost:5000/orders
+5. 为每个项目添加 Dockerfile 支持
 
 
 ## 配置多项目启动
