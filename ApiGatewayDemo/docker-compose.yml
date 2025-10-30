@@ -1,0 +1,41 @@
+﻿version: '3.8'
+services:
+  apigateway:
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"  # 外部 5000 映射到容器 80
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Docker
+    depends_on:
+      - productservice
+      - orderservice
+    networks:
+      - app-network
+
+  productservice:
+    build:
+      context: ./ProductService
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"  # 外部 5001 映射到容器 80
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - app-network
+
+  orderservice:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "5002:80"  # 外部 5002 映射到容器 80
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
