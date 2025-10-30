@@ -27,16 +27,18 @@
 	| ProductService| 开始 | 可以空白 |
 	| OrderService  | 开始 | 可以空白 |
 	- 新建配置文件👉重命名为DebugAll👉确定
+
+| 项目  | 操作 | 调试目标 |
+|-------|-----|--------|
+| ApiGateway     | 开始 | 可以空白 |
+| ProductService | 开始 | 可以空白 |
+| OrderService   | 开始 | 可以空白 |
+
 4. F5启动，测试请求
 http://localhost:5000/products
 http://localhost:5000/orders
 
 | Name  | Age | City   |
-|-------|-----|--------|
-| Alice | 25  | New York |
-| Bob   | 30  | London   |
-
-| 项目  | 操作 | 调试目标   |
 |-------|-----|--------|
 | Alice | 25  | New York |
 | Bob   | 30  | London   |
