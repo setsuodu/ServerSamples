@@ -1,9 +1,36 @@
 # 若联网游戏框架（Weakly Connected）
 
-- 单机+云同步游戏
-- 异步通信（上传记录）
-- 离线玩，联网同步成绩
 - 小游戏，微服务架构
+- 离线玩，异步通信（上传记录）同步成绩
+
+## 使用步骤
+1. 完成代码
+2. 设置环境变量（避免每个项目都取写appsettings，容易出错）
+```
+# 所有服务通用
+environment:
+  - ConnectionStrings__Default=Host=localhost;Database=db_game;Username=postgres;Password=123456
+  - Jwt__Key=your-super-secret-jwt-key-1234567890
+  - Jwt__Issuer=GameLeaderboard
+  - Jwt__Audience=GameLeaderboard
+```
+3. EFCore数据库迁移
+```
+# UserService
+cd UserService
+dotnet ef migrations add InitUser --output-dir Data/Migrations
+dotnet ef database update
+
+cd..
+
+# GameService
+cd GameService
+dotnet ef migrations add InitScore --output-dir Data/Migrations
+dotnet ef database update
+
+# LeaderboardService（无需迁移，复用表）
+```
+4. 测试 API
 
 ## 架构
 https://grok.com/c/50b3c881-c3c6-4b31-b2ab-0a4506676bd1

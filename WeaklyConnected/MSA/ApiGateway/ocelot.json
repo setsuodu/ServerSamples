@@ -10,11 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/users/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      }
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/game/{everything}",
@@ -26,11 +22,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      }
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/leaderboard/{everything}",
@@ -42,21 +34,10 @@
         }
       ],
       "UpstreamPathTemplate": "/api/leaderboard/{everything}",
-      "UpstreamHttpMethod": [ "GET" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      }
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:80",
-    "RequestIdKey": "",
-    "ServiceDiscoveryProvider": {
-      "Scheme": "http",
-      "Host": "localhost",
-      "Port": 8500,
-      "Type": "Consul"
-    }
+    "BaseUrl": "http://localhost:80"
   }
 }
