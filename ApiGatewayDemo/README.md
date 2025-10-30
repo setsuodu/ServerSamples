@@ -19,6 +19,14 @@
     ├── ocelot.json (路由配置)
     ├── Program.cs
     └── Properties/launchSettings.json (端口: 5000)
+3. 默认是单项目启动，修改sln属性👉多个启动项目(M):
+|项目|操作|
+|--|--|
+|ApiGateway    |开始|
+|ProductService|开始|
+|OrderService  |开始|
+新建配置文件：重命名为DebugAll👉确定
+4. 
 
 
 ## 配置多项目启动
