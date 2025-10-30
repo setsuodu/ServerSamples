@@ -21,11 +21,11 @@
     └── Properties/launchSettings.json (端口: 5000)
 3. 设置多项目启动
 	- 默认是单项目启动，修改sln属性👉多个启动项目(M):
-	|项目           |操作|调试目标|
+	| 项目           | 操作 | 调试目标 |
 	|--------------|----|------|
-	|ApiGateway    |开始|可以空白|
-	|ProductService|开始|可以空白|
-	|OrderService  |开始|可以空白|
+	| ApiGateway    | 开始 | 可以空白 |
+	| ProductService| 开始 | 可以空白 |
+	| OrderService  | 开始 | 可以空白 |
 	- 新建配置文件👉重命名为DebugAll👉确定
 4. F5启动，测试请求
 http://localhost:5000/products
@@ -36,6 +36,10 @@ http://localhost:5000/orders
 | Alice | 25  | New York |
 | Bob   | 30  | London   |
 
+| 项目  | 操作 | 调试目标   |
+|-------|-----|--------|
+| Alice | 25  | New York |
+| Bob   | 30  | London   |
 
 ## Docker支持
 
