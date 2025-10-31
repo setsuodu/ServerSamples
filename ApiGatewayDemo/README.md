@@ -69,6 +69,39 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 });
 ```
 
+## Docker部署
+1. 本地Docker（Docker Desktop）
+2. 远程Docker（局域网/云）仓库
+	- 打包成*.tar，发到linux主机上/tmp/，docker load /tmp/*.tar（老土 Packages）
+	- Github Packages/ Container Registry (GHCR)
+	- Gitlab Container Registry
+	- DockerHub Registry
+	- Harbor
+	- 腾讯云/阿里云镜像服务
+	
+1. 发布项目，推送到 Registry
+2. docker-compose.yml放到目标Docker，运行构建。
+```
+version: "3.9"
+
+services:
+  app:
+    image: <registry_url>/<namespace>/<image_name>:<tag>
+    ports:
+      - "8080:80"
+    environment:
+      - ENV=prod
+```
+- 官方仓库（DockerHub）可以省略URL
+```
+image: nginx:latest
+```
+- 其他仓库必须写明URL
+```
+image: 192.168.1.100:5000/myapp:latest
+```
+
+
 
 ## 多个ocelot配置
 Program.cs
