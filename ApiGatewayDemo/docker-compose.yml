@@ -1,6 +1,6 @@
-﻿version: '3.8'
-services:
+﻿services:
   apigateway:
+    image: setsuodu/apigateway:1.0
     build:
       context: ./ApiGateway
       dockerfile: Dockerfile
@@ -15,6 +15,7 @@ services:
       - app-network
 
   productservice:
+    image: setsuodu/productservice:1.0
     build:
       context: ./ProductService
       dockerfile: Dockerfile
@@ -26,6 +27,7 @@ services:
       - app-network
 
   orderservice:
+    image: setsuodu/orderservice:1.0
     build:
       context: ./OrderService
       dockerfile: Dockerfile
