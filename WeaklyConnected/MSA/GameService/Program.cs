@@ -6,6 +6,8 @@ using System.Text;
 using GameService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = builder.Environment.EnvironmentName;
+Console.WriteLine($"GameService环境是: {environment}");
 
 // 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");

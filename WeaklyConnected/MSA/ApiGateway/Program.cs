@@ -1,19 +1,20 @@
 ﻿// src/ApiGateway/Program.cs
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = builder.Environment.EnvironmentName;
+Console.WriteLine($"ApiGateway环境是: {environment}");
 
 // 1. 添加 Ocelot
 builder.Services.AddOcelot();
 
-var env = builder.Environment;
 builder.Configuration
     .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"ocelot.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+    .AddJsonFile($"ocelot.{environment}.json", optional: true, reloadOnChange: true);
 
 // 2. 全局 JWT 验证（可选：只在网关验证一次）
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";

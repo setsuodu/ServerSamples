@@ -4,13 +4,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>cff419d8-45ac-40b5-97c8-9a2e831d3fe1</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
-
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
 		<PrivateAssets>all</PrivateAssets>
