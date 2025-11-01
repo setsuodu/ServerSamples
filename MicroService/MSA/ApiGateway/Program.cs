@@ -10,11 +10,8 @@ var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"ApiGateway环境是: {environment}");
 
 // 1. 添加 Ocelot
-builder.Services.AddOcelot();
-
-builder.Configuration
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"ocelot.{environment}.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"ocelot.{environment}.json", optional: false, reloadOnChange: true);
+builder.Services.AddOcelot(builder.Configuration);
 
 // 2. 全局 JWT 验证（可选：只在网关验证一次）
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";

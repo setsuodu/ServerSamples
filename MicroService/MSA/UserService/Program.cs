@@ -1,27 +1,33 @@
-﻿// src/LeaderboardService/Program.cs
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
-using Microsoft.IdentityModel.Tokens;
+﻿// src/UserService/Program.cs
 using System.Text;
-using LeaderboardService.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using UserService.Data;
+using UserService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = builder.Environment.EnvironmentName;
+Console.WriteLine($"UserService环境是: {environment}");
 
-// 数据库
+// 1. 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");
-builder.Services.AddDbContext<LeaderboardDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Redis 缓存
-var redisConn = builder.Configuration["Redis:Connection"] ?? "redis:6379";
-builder.Services.AddStackExchangeRedisCache(options =>
+// 2. Identity + JWT
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
-    options.Configuration = redisConn;
-    options.InstanceName = "LeaderboardCache:";
-});
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
-// JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
 var issuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard";
 var audience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard";
@@ -41,23 +47,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
+// 3. 服务
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// 迁移数据库
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<LeaderboardDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

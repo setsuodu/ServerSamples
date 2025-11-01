@@ -1,0 +1,160 @@
+# Micro Service Architecture / MSA
+
+- 微服务架构，弱联网（Weakly Connected）小游戏
+- 离线玩，异步通信（上传记录）同步成绩
+
+
+
+## Feature
+
+1. 多项目启动，兼容 Docker / VS调试；
+
+2. CI/CD（Github Actions）现代化集成，同时利好 微服务 和 Unity；
+
+3. docker-compose 启动四个项目 + Redis + pgSQL；
+
+4. Gateway ocelot 路由；
+    ```bash
+    dotnet add package Ocelot
+    ```
+
+5. JWT；
+
+    ```bash
+    dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+    dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore //Identity
+    ```
+
+6. Redis；
+
+   - 命令启动
+   ```bash
+   docker run -d --name msa-redis -p 6379:6379 -v redis-data:/data redis:latest
+   ```
+   - docker-compose 启动
+   ```yml
+   services:
+    redis:
+    image: redis:latest
+       container_name: msa-redis
+       ports:
+         - "6379:6379"
+       volumes:
+         - redis-data:/data
+       command: redis-server --appendonly yes --requirepass mysecretpassword
+   
+   volumes:
+     redis-data:
+   ```
+
+7. PostgreSQL；
+
+    - 命令启动
+    ```bash
+    docker run -d \
+        --name msa-postgres \
+        -e POSTGRES_PASSWORD=****** \
+        -p 5432:5432 \
+        postgres:latest
+    ```
+
+    - docker-compose 启动
+	```yml
+	services:
+	  postgres:
+	    image: postgres:latest
+	    container_name: msa-postgres
+	    environment:
+	      POSTGRES_USER: msa
+	      POSTGRES_PASSWORD: ******
+	      POSTGRES_DB: db_msa
+	    ports:
+	      - "5432:5432"
+	    volumes:
+	      - pgdata:/var/lib/postgresql/data
+	    restart: unless-stopped
+	
+	volumes:
+	  pgdata:
+	```
+
+
+
+## 环境变量
+
+避免每个项目都取写appsettings，容易出错
+
+   ```
+# 所有服务通用
+environment:
+  - ConnectionStrings__Default=Host=localhost;Database=db_msa;Username=msa;Password=123456
+  - Jwt__Key=your-super-secret-jwt-key-1234567890
+  - Jwt__Issuer=GameLeaderboard
+  - Jwt__Audience=GameLeaderboard
+  - ASPNETCORE_ENVIRONMENT=Production/Docker/Release/Development/Debug/..
+   ```
+
+
+
+## EFCore数据库迁移
+
+```
+# UserService
+cd UserService
+dotnet ef migrations add InitUser --output-dir Data/Migrations
+dotnet ef database update
+
+cd..
+
+# GameService
+cd GameService
+dotnet ef migrations add InitScore --output-dir Data/Migrations
+dotnet ef database update
+
+# LeaderboardService（无需迁移，复用表）
+```
+
+
+## 架构说明
+https://grok.com/c/50b3c881-c3c6-4b31-b2ab-0a4506676bd1
+https://grok.com/c/296f20c3-1a0d-4b22-80cf-c12af7fd2e0b
+
+- ApiGateway（纯转发）
+- UserService
+	- 生成 JWT Token
+	- 处理用户注册/api/register、登陆/api/login、拉取信息/api/get_userinfo
+	- EFCore 访问数据库
+- GameService
+	- 接收客户端提交分数 👉 EFCore 存储分数
+	- 防作弊（可选）
+		- 严格验证（操作回放）
+		- 简单验证（通关时间vs全服均值/估算均值）
+		- 不验证
+- LeaderboardService
+	- 查询各种榜单
+	- EFCore 查询排名
+	- 用 Redis 频繁查询
+- （APIServer/DBServer）
+	- 微服务架构，让他们都能独立访问SQL，不需要了
+- Redis
+	- 独立部署，所有服务都有访问权
+	- ApiGateway：缓存路由配置、限流计数
+	- UserService：缓存用户会话、Token 黑名单
+	- GameService：缓存用户最近分数、临时提交缓冲
+	- Leaderboard：缓存 Top N 排行榜（核心性能优化
+	
+
+[API Gateway]
+     ↓ HTTP
+[User Service] ──→ PostgreSQL
+[Game Service]  ──→ PostgreSQL
+[Leaderboard]   ──→ PostgreSQL
+
+
+
+## 部署
+架构较小，全部服务部署在一台物理机（4C/8G/5M）上。
+
+```
+
+```
