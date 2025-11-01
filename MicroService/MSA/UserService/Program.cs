@@ -9,10 +9,11 @@ using UserService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var environment = builder.Environment.EnvironmentName;
-Console.WriteLine($"UserService环境是: {environment}");
+Console.WriteLine($"UserService 环境是: {environment}");
 
 // 1. 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");
+Console.WriteLine($"UserService 连接SQL: {connectionString}");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 

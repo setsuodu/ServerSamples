@@ -82,22 +82,50 @@
 
 ## 环境变量
 
-避免每个项目都取写appsettings，容易出错
+- __表示嵌套配置，.NET自动读取后面的：
+  - ConnectionStrings__Default 👉 Default
+  - Jwt__Key👉Key
+  - 以此类推
+- 环境变量优先级：
+  - appsettings.json：低，本地
+  - appsettings.{Environment}.json：中，appsettings.Production.json。
+  - 环境变量：高，ConnectionStrings__Default=...
+  - 命令行参数：最高，dotnet run -- 携带的参数，覆盖低级参数
+- 生产环境建议：只用环境变量，不提交 appsettings.json 敏感信息。
 
-   ```
+```yml
 # 所有服务通用
 environment:
-  - ConnectionStrings__Default=Host=localhost;Database=db_msa;Username=msa;Password=123456
+  - ConnectionStrings__Default=Host=localhost;Database=postgres;Username=postgres;Password=123456
   - Jwt__Key=your-super-secret-jwt-key-1234567890
   - Jwt__Issuer=GameLeaderboard
   - Jwt__Audience=GameLeaderboard
-  - ASPNETCORE_ENVIRONMENT=Production/Docker/Release/Development/Debug/..
-   ```
+  - ASPNETCORE_ENVIRONMENT=Development/Debug/Production/Docker/Release/..
+```
+
+- 修改了环境变量，Visual Studio 需要重启，不然无法得到新值。
+
+| json           | 开发环境                                         | 生产环境                                       |
+| -------------- | ------------------------------------------------ | ---------------------------------------------- |
+| appsettings    | 不能删。                                         | 不能删，可以不写配置，起兜底作用，防止程序崩溃 |
+| launchSettings | 不能删，VS调试 / dotnet run 用它。但是优先级最高 | 删除，不会打包进生产环境。                     |
+
+
 
 
 
 ## EFCore数据库迁移
-
+- 只要一个项目里有 DbContext + DbSet<T>（即有 Model）→ 就必须执行 dotnet ef
+	- Leaderboard 没有，不需要执行
+- 开发时：在 UserService 和 GameService 各运行一次
+	- dotnet ef migrations add
+	- dotnet ef database update
+- 部署时：所有服务 Program.cs 加 db.Database.Migrate()
+- 以后：模型变更 → 只在对应服务运行 dotnet ef
+- 效果：
+	- F5 启动 → 自动建表
+	- docker-compose up → 自动建表
+	- 无需手动 dotnet ef database update
 ```
 # UserService
 cd UserService
@@ -154,7 +182,3 @@ https://grok.com/c/296f20c3-1a0d-4b22-80cf-c12af7fd2e0b
 
 ## 部署
 架构较小，全部服务部署在一台物理机（4C/8G/5M）上。
-
-```
-
-```

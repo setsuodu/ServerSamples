@@ -8,10 +8,11 @@ using LeaderboardService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var environment = builder.Environment.EnvironmentName;
-Console.WriteLine($"Leaderboard环境是: {environment}");
+Console.WriteLine($"Leaderboard 环境是: {environment}");
 
 // 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");
+Console.WriteLine($"Leaderboard 连接SQL: {connectionString}");
 builder.Services.AddDbContext<LeaderboardDbContext>(options =>
     options.UseNpgsql(connectionString));
 

@@ -11,13 +11,13 @@ namespace UserService.Controllers;
 
 [ApiController]
 [Route("api/users")]
-public class AuthController : ControllerBase
+public class UserController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IConfiguration _config;
 
-    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration config)
+    public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration config)
     {
         _userManager = userManager;
         _signInManager = signInManager;

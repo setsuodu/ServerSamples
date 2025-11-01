@@ -1,20 +1,38 @@
 @echo off
 chcp 65001 >nul
-:: add-connection.bat - 添加 .NET 连接字符串环境变量
-:: 支持 ConnectionStrings__Default 格式（.NET 配置系统）
+:: set-env-prod.bat - 一键设置 .NET 生产环境变量
 
-set "CONN=Host=localhost;Database=db_msa;Username=msa;Password=123456"
+echo.
+echo 正在设置生产环境变量...
 
-:: 设置当前用户环境变量（永久生效）
+:: 1. 数据库连接字符串
+set "CONN=Host=localhost;Database=postgres;Username=postgres;Password=123456"
 setx ConnectionStrings__Default "%CONN%" >nul
-
-:: 同时设置当前窗口环境变量（立即生效）
 set ConnectionStrings__Default=%CONN%
 
+:: 2. JWT 配置
+setx Jwt__Key "your-super-secret-jwt-key-1234567890" >nul
+set Jwt__Key=your-super-secret-jwt-key-1234567890
+
+setx Jwt__Issuer "GameLeaderboard" >nul
+set Jwt__Issuer=GameLeaderboard
+
+setx Jwt__Audience "GameLeaderboard" >nul
+set Jwt__Audience=GameLeaderboard
+
+:: 3. 运行环境
+setx ASPNETCORE_ENVIRONMENT "Development" >nul
+set ASPNETCORE_ENVIRONMENT=Development
+
 echo.
-echo 已成功添加环境变量：
+echo 生产环境变量设置完成！
+echo.
 echo   ConnectionStrings__Default = %CONN%
+echo   Jwt__Key                   = your-super-secret-jwt-key-1234567890
+echo   Jwt__Issuer                = GameLeaderboard
+echo   Jwt__Audience              = GameLeaderboard
+echo   ASPNETCORE_ENVIRONMENT     = Development
 echo.
-echo 提示：已对当前窗口立即生效，重启终端或 VS Code 后全局生效。
+echo 提示：当前窗口立即生效，重启 VS Code / 终端 后全局生效。
 echo.
 pause

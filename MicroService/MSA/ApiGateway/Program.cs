@@ -6,8 +6,15 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 总结：三行代码读取所有环境变量
 var environment = builder.Environment.EnvironmentName;
-Console.WriteLine($"ApiGateway环境是: {environment}");
+Console.WriteLine($"ASPNETCORE_ENVIRONMENT 是: {environment}");
+string _jwtKey = builder.Configuration["Jwt:Key"];
+Console.WriteLine($"Jwt__Key 是: {_jwtKey}");
+string _connStr = builder.Configuration.GetConnectionString("Default");
+Console.WriteLine($"ConnectionStrings__Default 是: {_connStr}");
+
 
 // 1. 添加 Ocelot
 builder.Configuration.AddJsonFile($"ocelot.{environment}.json", optional: false, reloadOnChange: true);

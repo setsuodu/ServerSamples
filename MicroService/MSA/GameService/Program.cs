@@ -7,10 +7,11 @@ using GameService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var environment = builder.Environment.EnvironmentName;
-Console.WriteLine($"GameService环境是: {environment}");
+Console.WriteLine($"GameService 环境是: {environment}");
 
 // 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");
+Console.WriteLine($"GameService 连接SQL: {connectionString}");
 builder.Services.AddDbContext<GameDbContext>(options =>
     options.UseNpgsql(connectionString));
 
