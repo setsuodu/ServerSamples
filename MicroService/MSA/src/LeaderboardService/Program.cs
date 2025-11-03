@@ -18,8 +18,11 @@ builder.Services.AddDbContext<LeaderboardDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // 2. Redis 缓存
-//var redisConn = builder.Configuration["Redis:Connection"] ?? "msa-redis:6379";
-var redisConn = builder.Configuration["Redis:Connection"] ?? "localhost:6379";
+string redisConn = string.Empty;
+if (environment == "Development")
+    redisConn = builder.Configuration["Redis:Connection"] ?? "localhost:6379"; //VS环境
+else
+    redisConn = builder.Configuration["Redis:Connection"] ?? "msa-redis:6379"; //docker环境
 Console.WriteLine($"Redis Connection: {redisConn}");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
