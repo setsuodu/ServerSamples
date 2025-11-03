@@ -1,4 +1,4 @@
-﻿namespace BugService.Models;
+﻿namespace WebApi.Models;
 
 public class Bug
 {

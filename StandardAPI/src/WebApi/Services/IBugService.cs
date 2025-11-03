@@ -1,6 +1,6 @@
-﻿using BugService.Models;
+﻿using WebApi.Models;
 
-namespace BugService.Services;
+namespace WebApi.Services;
 
 public interface IBugService
 {

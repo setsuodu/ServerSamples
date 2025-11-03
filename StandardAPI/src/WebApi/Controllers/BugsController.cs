@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BugService.Models;
-using BugService.Services;
+using WebApi.Models;
+using WebApi.Services;
 
 namespace WebApi.Controllers;
 

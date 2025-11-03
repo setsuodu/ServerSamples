@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BugService.Data;
-using BugService.Services;
+using WebApi.Data;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

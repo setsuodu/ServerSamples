@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BugService.Models;
+using WebApi.Models;
 
-namespace BugService.Data;
+namespace WebApi.Data;
 
 public class AppDbContext : DbContext
 {

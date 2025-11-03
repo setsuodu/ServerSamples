@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BugService.Data;
-using BugService.Models;
+using WebApi.Data;
+using WebApi.Models;
 
-namespace BugService.Services;
+namespace WebApi.Services;
 
 public class BugService : IBugService
 {
