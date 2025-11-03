@@ -101,6 +101,7 @@ environment:
   - Jwt__Issuer=GameLeaderboard
   - Jwt__Audience=GameLeaderboard
   - ASPNETCORE_ENVIRONMENT=Development/Debug/Production/Docker/Release/..
+  - Redis__Connection=msa-redis:6379
 ```
 
 - 修改了环境变量，Visual Studio 需要重启，不然无法得到新值。
