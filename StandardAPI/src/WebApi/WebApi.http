@@ -1,4 +1,4 @@
-@BugService_HostAddress = http://localhost:5026
+﻿@BugService_HostAddress = http://localhost:5001
 
 GET {{BugService_HostAddress}}/weatherforecast/
 Accept: application/json

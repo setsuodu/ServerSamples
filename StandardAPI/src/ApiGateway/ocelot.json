@@ -1,0 +1,19 @@
+﻿{
+    "Routes": [
+        {
+            "DownstreamPathTemplate": "/api/bugs",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "webapi",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/bugs",
+            "UpstreamHttpMethod": [ "GET", "POST" ]
+        }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "http://localhost:5000"
+    }
+}
