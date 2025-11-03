@@ -20,9 +20,13 @@ public class BugService : IBugService
 
     public async Task<List<BugResponse>> GetAllAsync()
     {
-        return await _db.Bugs
-            .Select(b => new BugResponse(b.Id, b.Title, b.Description, b.CreatedAt))
+        // 方案一：先查询到内存，再投影（推荐）
+        var bugs = await _db.Bugs
+            .AsNoTracking()
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
+
+        return bugs.Select(b => new BugResponse(b.Id, b.Title, b.Description, b.CreatedAt))
+                   .ToList();
     }
 }
