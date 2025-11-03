@@ -1,9 +1,10 @@
 ﻿// src/LeaderboardService/Controllers/LeaderboardController.cs
+using LeaderboardService.Data;
+using LeaderboardService.Models;
+using LeaderboardService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LeaderboardService.Data;
-using LeaderboardService.Services;
 
 namespace LeaderboardService.Controllers;
 
@@ -29,27 +30,21 @@ public class LeaderboardController : ControllerBase
             return Ok(cached);
 
         // 2. 查数据库
-        var top100 = await _db.Scores
-            .FromSqlRaw("""
-                SELECT 
-                    s."UserId", 
-                    u."DisplayName", 
-                    MAX(s."Points") as "Points"
-                FROM "Scores" s
-                JOIN "Users" u ON s."UserId" = u."Id"
-                GROUP BY s."UserId", u."DisplayName"
-                ORDER BY MAX(s."Points") DESC
-                LIMIT 100
-                """)
+        var result = await _db.Database
+            .SqlQueryRaw<RankItem>(
+                """
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY MAX(s."Points") DESC) as "Rank",
+                s."UserId" as "UserId",
+                COALESCE(u."DisplayName", '匿名') as "DisplayName",
+                MAX(s."Points") as "Score"
+            FROM "Scores" s
+            LEFT JOIN "Users" u ON s."UserId" = u."Id"
+            GROUP BY s."UserId", u."DisplayName"
+            ORDER BY MAX(s."Points") DESC
+            LIMIT 100
+            """)
             .ToListAsync();
-
-        var result = top100.Select((x, i) => new RankItem
-        {
-            Rank = i + 1,
-            UserId = x.UserId,
-            DisplayName = x.DisplayName ?? "匿名",
-            Score = x.Points
-        }).ToList();
 
         // 3. 写缓存
         await _cache.SetCachedLeaderboardAsync(result);
@@ -64,17 +59,18 @@ public class LeaderboardController : ControllerBase
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Unauthorized();
 
-        var rankResult = await _db.Set<UserRankDto>()
-            .FromSqlRaw("""
-            SELECT RANK() OVER (ORDER BY MAX(s."Points") DESC) AS rank
-            FROM "Scores" s
-            WHERE s."UserId" = {0}
-            GROUP BY s."UserId"
-            """, userId)
+        // 直接执行 SQL，返回标量
+        var rank = await _db.Database
+            .SqlQueryRaw<RankResult>(
+                """
+        SELECT RANK() OVER (ORDER BY MAX(s."Points") DESC)::int AS "Value"
+        FROM "Scores" s
+        WHERE s."UserId" = {0}
+        GROUP BY s."UserId"
+        """, userId)
+            .Select(r => r.Value)
             .FirstOrDefaultAsync();
 
-        var rank = rankResult?.rank ?? 0;
-
-        return Ok(new { UserId = userId, Rank = (int)rank });
+        return Ok(new { UserId = userId, Rank = rank });
     }
 }

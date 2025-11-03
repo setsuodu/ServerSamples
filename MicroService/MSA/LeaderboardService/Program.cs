@@ -5,26 +5,32 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using LeaderboardService.Data;
+using LeaderboardService.Services; // ← 确保引用
 
 var builder = WebApplication.CreateBuilder(args);
 var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"Leaderboard 环境是: {environment}");
 
-// 数据库
+// 1. 数据库
 var connectionString = builder.Configuration.GetConnectionString("Default");
 Console.WriteLine($"Leaderboard 连接SQL: {connectionString}");
 builder.Services.AddDbContext<LeaderboardDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Redis 缓存
-var redisConn = builder.Configuration["Redis:Connection"] ?? "redis:6379";
+// 2. Redis 缓存
+//var redisConn = builder.Configuration["Redis:Connection"] ?? "msa-redis:6379";
+var redisConn = builder.Configuration["Redis:Connection"] ?? "localhost:6379";
+Console.WriteLine($"Redis Connection: {redisConn}");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisConn;
     options.InstanceName = "LeaderboardCache:";
 });
 
-// JWT
+// 3. 注册 LeaderboardCacheService
+builder.Services.AddScoped<LeaderboardCacheService>(); // ← 关键一行！
+
+// 4. JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
 var issuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard";
 var audience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard";

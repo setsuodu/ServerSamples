@@ -38,7 +38,21 @@ public class UserController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        return Ok(new { Message = "注册成功" });
+        // 注册成功 = 自动登录
+        var token = GenerateJwtToken(user);
+
+        return Ok(new
+        {
+            Message = "注册成功",
+            Token = token,
+            User = new
+            {
+                user.Id,
+                user.UserName,
+                user.DisplayName,
+                user.Email
+            }
+        });
     }
 
     [HttpPost("login")]

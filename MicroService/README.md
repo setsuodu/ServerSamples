@@ -26,12 +26,9 @@
     ```
 
 6. Redis；
-
-   - 命令启动
-   ```bash
-   docker run -d --name msa-redis -p 6379:6379 -v redis-data:/data redis:latest
-   ```
-   - docker-compose 启动
+	- Redis一般推荐与API服务放在同一台物理机。除非大型项目需要讲Redis集群分布式部署。
+	- 用Docker调试，使用docker-compose一键启动，容器内直接使用容器名访问。
+	- docker-compose 启动
    ```yml
    services:
     redis:
@@ -46,16 +43,19 @@
    volumes:
      redis-data:
    ```
+	- 用VS调试，外部访问需要额外配置网络。
+	- 启动一个独立容器
+   ```bash
+   docker run -d --name msa-redis -p 6379:6379 -v redis-data:/data redis:latest --bind 0.0.0.0
+   docker logs temp-redis
+   # 成功：看到最后 "Ready to accept connections"
+   ```
 
 7. PostgreSQL；
 
     - 命令启动
     ```bash
-    docker run -d \
-        --name msa-postgres \
-        -e POSTGRES_PASSWORD=****** \
-        -p 5432:5432 \
-        postgres:latest
+	docker run -d --name msa-postgres -e POSTGRES_PASSWORD=123456 -p 5432:5432 postgres:latest
     ```
 
     - docker-compose 启动

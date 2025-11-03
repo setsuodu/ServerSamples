@@ -1,9 +1,11 @@
 ﻿// src/GameService/Controllers/ScoreController.cs
+using GameService.Data;
+using GameService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GameService.Data;
-using GameService.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace GameService.Controllers;
 
@@ -19,8 +21,17 @@ public class ScoreController : ControllerBase
     [HttpPost("submit")]
     public async Task<IActionResult> SubmitScore([FromBody] SubmitScoreDto dto)
     {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (userId == null) return Unauthorized();
+        Console.WriteLine("收到分数提交请求");
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+            return BadRequest(new { Message = "验证失败", Errors = errors });
+        }
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("无效 Token");
 
         // 简单防作弊：分数范围
         if (dto.Points < 0 || dto.Points > 1_000_000) return BadRequest("无效分数");
@@ -40,7 +51,9 @@ public class ScoreController : ControllerBase
 
 public class SubmitScoreDto
 {
-    public string UserId { get; set; } = null!;
-    public string? DisplayName { get; set; }
+    //public string UserId { get; set; } = null!;
+    //public string? DisplayName { get; set; }
+    [Required]
+    [Range(0, 1_000_000)]
     public int Points { get; set; }
 }

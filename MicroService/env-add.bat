@@ -24,6 +24,13 @@ set Jwt__Audience=GameLeaderboard
 setx ASPNETCORE_ENVIRONMENT "Development" >nul
 set ASPNETCORE_ENVIRONMENT=Development
 
+:: 4. 排行榜使用Redis
+setx Redis__Connection "msa-redis:6379" >nul
+set Redis__Connection=msa-redis:6379
+
+setx Redis__InstanceName "LeaderboardCache" >nul
+set Redis__InstanceName=LeaderboardCache
+
 echo.
 echo 生产环境变量设置完成！
 echo.
@@ -32,6 +39,8 @@ echo   Jwt__Key                   = your-super-secret-jwt-key-1234567890
 echo   Jwt__Issuer                = GameLeaderboard
 echo   Jwt__Audience              = GameLeaderboard
 echo   ASPNETCORE_ENVIRONMENT     = Development
+echo   Redis__Connection          = msa-redis:6379
+echo   Redis__InstanceName        = LeaderboardCache
 echo.
 echo 提示：当前窗口立即生效，重启 VS Code / 终端 后全局生效。
 echo.

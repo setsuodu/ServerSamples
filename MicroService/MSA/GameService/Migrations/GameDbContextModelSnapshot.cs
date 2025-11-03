@@ -49,7 +49,7 @@ namespace GameService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Scores", (string)null);
+                    b.ToTable("Scores");
                 });
 #pragma warning restore 612, 618
         }
