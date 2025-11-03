@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService", "GameService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaderboardService", "LeaderboardService\LeaderboardService.csproj", "{9F5D367D-F237-456B-AAD7-C18AEC550002}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8488D1D0-F3E6-4755-8EAD-DE264ECD8EB8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{FC8242A4-CBEA-4558-9869-CFDEC471ADA0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7DB96F02-3A39-48E4-AC56-275A2D5DC966} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9F5D367D-F237-456B-AAD7-C18AEC550002} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF2AA036-EFF2-489A-A96F-B6D062F6E382}
