@@ -35,8 +35,3 @@ public class RankItem
     public string DisplayName { get; set; } = null!;
     public int Score { get; set; }
 }
-
-public class UserRankDto
-{
-    public long rank { get; set; }  // 注意：PostgreSQL RANK() 返回 bigint → long
-}

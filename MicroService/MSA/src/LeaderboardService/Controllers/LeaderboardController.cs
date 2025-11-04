@@ -12,43 +12,47 @@ namespace LeaderboardService.Controllers;
 [Route("api/leaderboard")]
 public class LeaderboardController : ControllerBase
 {
-    private readonly LeaderboardDbContext _db;
+    private readonly GameDbContext _db;
     private readonly LeaderboardCacheService _cache;
 
-    public LeaderboardController(LeaderboardDbContext db, LeaderboardCacheService cache)
+    public LeaderboardController(GameDbContext db, LeaderboardCacheService cache)
     {
         _db = db;
         _cache = cache;
     }
 
     [HttpGet("global")]
-    public async Task<IActionResult> GetGlobalTop100()
+    public async Task<IActionResult> GetGlobalTop100(
+    [FromServices] GameDbContext gameDb,
+    [FromServices] UserDbContext userDb,
+    [FromServices] LeaderboardCacheService cache)
     {
-        // 1. 查缓存
-        var cached = await _cache.GetCachedLeaderboardAsync();
-        if (cached != null)
-            return Ok(cached);
+        Console.WriteLine("请求了全球排名");
 
-        // 2. 查数据库
-        var result = await _db.Database
-            .SqlQueryRaw<RankItem>(
-                """
-            SELECT 
-                ROW_NUMBER() OVER (ORDER BY MAX(s."Points") DESC) as "Rank",
-                s."UserId" as "UserId",
-                COALESCE(u."DisplayName", '匿名') as "DisplayName",
-                MAX(s."Points") as "Score"
-            FROM "Scores" s
-            LEFT JOIN "Users" u ON s."UserId" = u."Id"
-            GROUP BY s."UserId", u."DisplayName"
-            ORDER BY MAX(s."Points") DESC
-            LIMIT 100
-            """)
+        var cached = await cache.GetCachedLeaderboardAsync();
+        if (cached != null) return Ok(cached);
+
+        var topScores = await gameDb.Scores
+            .GroupBy(s => s.UserId)
+            .Select(g => new { g.Key, Score = g.Max(s => s.Points) })
+            .OrderByDescending(x => x.Score)
+            .Take(100)
             .ToListAsync();
 
-        // 3. 写缓存
-        await _cache.SetCachedLeaderboardAsync(result);
+        var userIds = topScores.Select(x => x.Key).ToList();
+        var users = await userDb.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.DisplayName ?? "匿名");
 
+        var result = topScores.Select((x, i) => new RankItem
+        {
+            Rank = i + 1,
+            UserId = x.Key,
+            DisplayName = users.GetValueOrDefault(x.Key, "匿名"),
+            Score = x.Score
+        }).ToList();
+
+        await cache.SetCachedLeaderboardAsync(result);
         return Ok(result);
     }
 
@@ -56,6 +60,8 @@ public class LeaderboardController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetMyRank()
     {
+        Console.WriteLine("请求了我的排名");
+
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Unauthorized();
 

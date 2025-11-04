@@ -1,5 +1,36 @@
 ﻿{
   "Routes": [
+    // === 1. 注册：不需要登录 ===
+    {
+      "DownstreamPathTemplate": "/api/users/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/register",
+      "UpstreamHttpMethod": [ "POST" ]
+      // 无 AuthenticationOptions → 公开
+    },
+
+    // === 2. 登录：不需要登录 ===
+    {
+      "DownstreamPathTemplate": "/api/users/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/login",
+      "UpstreamHttpMethod": [ "POST" ]
+      // 无 AuthenticationOptions
+    },
+
+    // === 3. 其他用户接口：需要登录 ===
     {
       "DownstreamPathTemplate": "/api/users/{everything}",
       "DownstreamScheme": "http",
@@ -10,8 +41,32 @@
         }
       ],
       "UpstreamPathTemplate": "/api/users/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
+
+    // === 4. 提交分数：需要登录 ===
+    {
+      "DownstreamPathTemplate": "/api/game/submit",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "game-service",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/submit",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+
+    // === 5. 游戏其他接口：公开（如健康检查）===
     {
       "DownstreamPathTemplate": "/api/game/{everything}",
       "DownstreamScheme": "http",
@@ -22,10 +77,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
+      "UpstreamHttpMethod": [ "GET" ]
+      // 无认证
     },
+
+    // === 6. 全球榜：公开 ===
     {
-      "DownstreamPathTemplate": "/api/leaderboard/{everything}",
+      "DownstreamPathTemplate": "/api/leaderboard/global",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -33,8 +91,27 @@
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/api/leaderboard/{everything}",
+      "UpstreamPathTemplate": "/api/leaderboard/global",
       "UpstreamHttpMethod": [ "GET" ]
+      // 无认证
+    },
+
+    // === 7. 个人排名：需要登录 ===
+    {
+      "DownstreamPathTemplate": "/api/leaderboard/my-rank",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "leaderboard-service",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/leaderboard/my-rank",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

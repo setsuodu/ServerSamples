@@ -59,6 +59,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    Console.WriteLine("User数据迁移");
     db.Database.Migrate();
 }
 

@@ -3,7 +3,30 @@
 - 微服务架构，弱联网（Weakly Connected）小游戏
 - 离线玩，异步通信（上传记录）同步成绩
 
+## 常见问题
+1. relation "__EFMigrationsHistory" already exists
+🌟最佳实践：一个微服务 = 一个数据库（或 Schema），避免迁移冲突、耦合。🌟
+是的，你遇到的问题 非常典型，在微服务架构中使用多个 DbContext（每个微服务或模块一个项目都有自己的 Migrations）时，调用 Migrate() 出现：
+textrelation "__EFMigrationsHistory" already exists
+这 不是代码重复，而是多个 DbContext 共享同一个数据库却试图创建同一个迁移历史表。
+问题本质
+EF Core 默认会为 每个 DbContext 在数据库中插入一条记录到 __EFMigrationsHistory 表中，用来跟踪该 Context 的迁移历史。
 
+| 方案 | 适用场景 | 推荐度 |
+|------|--------|-------| 
+| 独立数据库 | 生产、微服务标准 | ⭐⭐⭐⭐⭐ |
+| PostgreSQL Schema | 共享 DB 但支持 Schema | ⭐⭐⭐⭐ |
+| 自定义历史表名 | 临时共享 DB | ⭐⭐⭐ |
+| 条件执行 Migrate | 开发环境 | ⭐⭐ |
+| EnsureCreated | 原型/测试 | ⭐ |
+
+2. 为什么VS调试不会提示报错？
+- 与调试机制有关，并非没有错！
+	- VS是一步一步，单独运行每个项目，运行完关闭，再启动下一个服务。
+	- Docker是同时启动所有服务，执行Migrate()。
+
+3. container msa-postgres-userdb has no healthcheck configured
+- 所有数据库必须加 healthcheck: 避免服务启动顺序错误，让服务等待数据库启动后再运行
 
 ## Feature
 

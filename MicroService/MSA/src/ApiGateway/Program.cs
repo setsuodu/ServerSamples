@@ -24,36 +24,36 @@ builder.Services.AddOcelot(builder.Configuration);
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false; // 开发环境
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard",
-        ValidAudience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard",
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.FromMinutes(5)
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "GameLeaderboard",
+            ValidAudience = "GameLeaderboard",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:Key"] ?? "fallback-key"))
+        };
+    });
 
 var app = builder.Build();
 
-// 启用中间件
 app.UseHttpsRedirection();
+
+// 1. 解析身份
 app.UseAuthentication();
+
+// 2. 检查权限
 app.UseAuthorization();
 
-// 使用 Ocelot
-app.UseOcelot().Wait();
+// 3. 路由 / 控制器
+//app.MapControllers();
+
+// 4. Ocelot（如果使用网关）
+await app.UseOcelot();   // 必须在 Authentication 之后
 
 app.Run();

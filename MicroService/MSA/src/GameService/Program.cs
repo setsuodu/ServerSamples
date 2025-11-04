@@ -44,6 +44,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+    Console.WriteLine("Game数据迁移");
     db.Database.Migrate();
 }
 

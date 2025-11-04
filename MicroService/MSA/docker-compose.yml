@@ -1,0 +1,148 @@
+﻿# ============================================================
+# 1. 顶层定义自定义网络
+# ============================================================
+networks:
+  msa_network:
+    # 推荐：使用 bridge 驱动，这是默认的，但明确写出更清晰
+    driver: bridge
+    # 你也可以在这里配置子网等更高级的选项，例如：
+    # ipam:
+    #   config:
+    #     - subnet: "172.25.0.0/16"
+
+# ============================================================
+# 2. 服务配置，引用网络
+# ============================================================
+services:
+  # 2 个独立数据库
+  user_db:
+    image: postgres:latest
+    container_name: msa-postgres-userdb
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+# Docker Desktop 创建文件夹做映射，运行有警告
+# 仅部署真实原生 Docker 时打开
+#    volumes:
+#      - user_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - msa_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+
+  game_db:
+    image: postgres:latest
+    container_name: msa-postgres-gamedb
+    environment:
+      POSTGRES_DB: game_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+#    volumes:
+#      - game_db_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - msa_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+
+  redis:
+    image: redis:latest
+    container_name: msa-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - msa_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  apigateway:
+    build:
+        context: ./src/ApiGateway
+        dockerfile: Dockerfile
+    container_name: apigateway-1
+    ports:
+      - "5000:80"
+    networks:
+      - msa_network
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Jwt__Key=your-super-secret-jwt-key-1234567890
+      - Jwt__Issuer=GameLeaderboard
+      - Jwt__Audience=GameLeaderboard
+    depends_on:
+      - user-service
+      - game-service
+      - leaderboard-service
+
+  user-service:
+    build:
+        context: ./src/UserService
+        dockerfile: Dockerfile
+    container_name: user-service-1
+    networks:
+      - msa_network
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Host=user_db;Database=user_db;Username=postgres;Password=123456
+      - Jwt__Key=your-super-secret-jwt-key-1234567890
+    depends_on:
+      user_db:
+        condition: service_healthy
+
+  game-service:
+    build:
+        context: ./src/GameService
+        dockerfile: Dockerfile
+    container_name: game-service-1
+    networks:
+      - msa_network
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Host=game_db;Database=game_db;Username=postgres;Password=123456
+    depends_on:
+     game_db:
+        condition: service_healthy
+
+  leaderboard-service:
+    build:
+        context: ./src/LeaderboardService
+        dockerfile: Dockerfile
+    container_name: leaderboard-service-1
+    networks:
+      - msa_network
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__GameDb=Host=game_db;Database=game_db;Username=postgres;Password=123456
+      - ConnectionStrings__UserDb=Host=user_db;Database=user_db;Username=postgres;Password=123456
+      - Redis__Connection=redis:6379
+      - Jwt__Key=your-super-secret-jwt-key-1234567890
+      - Jwt__Issuer=GameLeaderboard
+      - Jwt__Audience=GameLeaderboard
+    depends_on:
+      user_db:
+        condition: service_healthy
+      game_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+# Docker Desktop 创建文件夹做映射，运行有警告
+# 仅部署真实原生 Docker 时打开
+#volumes:
+#  user_db_data:
+#  game_db_data:
+#  leaderboard_db_data:

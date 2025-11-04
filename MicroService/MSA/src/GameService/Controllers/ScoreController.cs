@@ -19,9 +19,10 @@ public class ScoreController : ControllerBase
     public ScoreController(GameDbContext db) => _db = db;
 
     [HttpPost("submit")]
+    [Authorize]  // 保留
     public async Task<IActionResult> SubmitScore([FromBody] SubmitScoreDto dto)
     {
-        Console.WriteLine("收到分数提交请求");
+        Console.WriteLine("请求提交分数");
 
         if (!ModelState.IsValid)
         {
@@ -47,6 +48,10 @@ public class ScoreController : ControllerBase
 
         return Ok(new { Message = "提交成功", ScoreId = score.Id });
     }
+    
+    // 可选：公开接口（如查历史）不需要登录
+    [HttpGet("health")]
+    public IActionResult Health() => Ok("GameService OK");
 }
 
 public class SubmitScoreDto
