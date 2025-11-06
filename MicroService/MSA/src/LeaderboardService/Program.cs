@@ -1,10 +1,11 @@
 ﻿// src/LeaderboardService/Program.cs
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using LeaderboardService.Data;
 using LeaderboardService.Services; // ← 确保引用
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var environment = builder.Environment.EnvironmentName;
@@ -32,7 +33,7 @@ else
 Console.WriteLine($"Redis Connection: {redisConn}");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = redisConn;
+    options.Configuration = redisConn; // ← 这就是连接。无需手动 new Redis 客户端，IDistributedCache 自动处理连接池、重连、序列化。
     options.InstanceName = "LeaderboardCache:";
 });
 
@@ -66,6 +67,27 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+// === Redis 连接测试（启动时执行）===
+using (var scope = app.Services.CreateScope())
+{
+    var cache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+    try
+    {
+        await cache.SetStringAsync("health-check", "ok", new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+        });
+        var value = await cache.GetStringAsync("health-check");
+        app.Logger.LogInformation("Redis 连接成功！health-check = {Value}", value);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Redis 连接失败！请检查 Redis__Connection 配置");
+        // 可选：抛异常阻止启动
+        // throw;
+    }
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

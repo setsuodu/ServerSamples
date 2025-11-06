@@ -10,8 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 // 总结：三行代码读取所有环境变量
 var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"ASPNETCORE_ENVIRONMENT 是: {environment}");
-string _jwtKey = builder.Configuration["Jwt:Key"];
-Console.WriteLine($"Jwt__Key 是: {_jwtKey}");
 
 
 // 1. 添加 Ocelot
@@ -20,7 +18,9 @@ builder.Services.AddOcelot(builder.Configuration);
 
 // 2. 全局 JWT 验证（可选：只在网关验证一次）
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
-var key = Encoding.UTF8.GetBytes(jwtKey);
+Console.WriteLine($"jwtKey 👉 {jwtKey}");
+var issuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard";
+var audience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -31,10 +31,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "GameLeaderboard",
-            ValidAudience = "GameLeaderboard",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:Key"] ?? "fallback-key"))
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
