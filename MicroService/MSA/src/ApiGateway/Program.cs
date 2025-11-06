@@ -17,10 +17,12 @@ builder.Configuration.AddJsonFile($"ocelot.{environment}.json", optional: false,
 builder.Services.AddOcelot(builder.Configuration);
 
 // 2. 全局 JWT 验证（可选：只在网关验证一次）
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";
-Console.WriteLine($"jwtKey 👉 {jwtKey}");
-var issuer = builder.Configuration["Jwt:Issuer"] ?? "GameLeaderboard";
-var audience = builder.Configuration["Jwt:Audience"] ?? "GameLeaderboard";
+var jwtKey = builder.Configuration["Jwt:Key"]
+             ?? throw new InvalidOperationException("Jwt:Key 配置缺失！请检查环境变量或 appsettings.json");
+var issuer = builder.Configuration["Jwt:Issuer"]
+             ?? throw new InvalidOperationException("Jwt:Issuer 配置缺失！");
+var audience = builder.Configuration["Jwt:Audience"]
+             ?? throw new InvalidOperationException("Jwt:Audience 配置缺失！");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
