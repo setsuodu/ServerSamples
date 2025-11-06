@@ -12,10 +12,10 @@ var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"UserService 环境是: {environment}");
 
 // 1. 数据库
-var connectionString = builder.Configuration.GetConnectionString("Default");
-Console.WriteLine($"UserService 连接SQL: {connectionString}");
+var userDbString = builder.Configuration.GetConnectionString("UserDb");
+Console.WriteLine($"UserService 连接 UserDb: {userDbString}");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(userDbString));
 
 // 2. Identity + JWT
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>

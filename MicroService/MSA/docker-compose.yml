@@ -96,7 +96,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__Default=Host=user_db;Database=user_db;Username=postgres;Password=123456
+      - ConnectionStrings__UserDb=Host=user_db;Database=user_db;Username=postgres;Password=123456
       - Jwt__Key=your-super-secret-jwt-key-1234567890
     depends_on:
       user_db:
@@ -112,7 +112,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__Default=Host=game_db;Database=game_db;Username=postgres;Password=123456
+      - ConnectionStrings__GameDb=Host=game_db;Database=game_db;Username=postgres;Password=123456
     depends_on:
      game_db:
         condition: service_healthy
@@ -128,7 +128,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__GameDb=Host=game_db;Database=game_db;Username=postgres;Password=123456
       - ConnectionStrings__UserDb=Host=user_db;Database=user_db;Username=postgres;Password=123456
-      - Redis__Connection=redis:6379
+      - Redis__Connection=msa-redis:6379
       - Jwt__Key=your-super-secret-jwt-key-1234567890
       - Jwt__Issuer=GameLeaderboard
       - Jwt__Audience=GameLeaderboard

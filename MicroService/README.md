@@ -81,28 +81,6 @@ EF Core 默认会为 每个 DbContext 在数据库中插入一条记录到 __EFM
 	docker run -d --name msa-postgres -e POSTGRES_PASSWORD=123456 -p 5432:5432 postgres:latest
     ```
 
-    - docker-compose 启动
-	```yml
-	services:
-	  postgres:
-	    image: postgres:latest
-	    container_name: msa-postgres
-	    environment:
-	      POSTGRES_USER: msa
-	      POSTGRES_PASSWORD: ******
-	      POSTGRES_DB: db_msa
-	    ports:
-	      - "5432:5432"
-	    volumes:
-	      - pgdata:/var/lib/postgresql/data
-	    restart: unless-stopped
-	
-	volumes:
-	  pgdata:
-	```
-
-
-
 ## 环境变量
 
 - __表示嵌套配置，.NET自动读取后面的：
@@ -133,8 +111,6 @@ environment:
 | -------------- | ------------------------------------------------ | ---------------------------------------------- |
 | appsettings    | 不能删。                                         | 不能删，可以不写配置，起兜底作用，防止程序崩溃 |
 | launchSettings | 不能删，VS调试 / dotnet run 用它。但是优先级最高 | 删除，不会打包进生产环境。                     |
-
-
 
 
 
@@ -195,14 +171,6 @@ https://grok.com/c/296f20c3-1a0d-4b22-80cf-c12af7fd2e0b
 	- GameService：缓存用户最近分数、临时提交缓冲
 	- Leaderboard：缓存 Top N 排行榜（核心性能优化
 	
-
-[API Gateway]
-     ↓ HTTP
-[User Service] ──→ PostgreSQL
-[Game Service]  ──→ PostgreSQL
-[Leaderboard]   ──→ PostgreSQL
-
-
 
 ## 部署
 架构较小，全部服务部署在一台物理机（4C/8G/5M）上。

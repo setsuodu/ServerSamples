@@ -10,10 +10,10 @@ var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"GameService 环境是: {environment}");
 
 // 数据库
-var connectionString = builder.Configuration.GetConnectionString("Default");
-Console.WriteLine($"GameService 连接SQL: {connectionString}");
+var gameDbString = builder.Configuration.GetConnectionString("GameDb");
+Console.WriteLine($"GameService 连接 GameDb: {gameDbString}");
 builder.Services.AddDbContext<GameDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(gameDbString));
 
 // JWT 验证
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-jwt-key-1234567890";

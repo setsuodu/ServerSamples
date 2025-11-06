@@ -12,8 +12,6 @@ var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"ASPNETCORE_ENVIRONMENT 是: {environment}");
 string _jwtKey = builder.Configuration["Jwt:Key"];
 Console.WriteLine($"Jwt__Key 是: {_jwtKey}");
-string _connStr = builder.Configuration.GetConnectionString("Default");
-Console.WriteLine($"ConnectionStrings__Default 是: {_connStr}");
 
 
 // 1. 添加 Ocelot

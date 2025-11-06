@@ -1,5 +1,4 @@
 # Standard API Sample
-https://grok.com/c/1784c7ec-5528-4172-b96a-f2277c710838
 
 # API
 1. 客户端提交BUG。
