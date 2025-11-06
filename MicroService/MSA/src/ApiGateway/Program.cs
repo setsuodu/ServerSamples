@@ -50,7 +50,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // 3. 路由 / 控制器
-//app.MapControllers();
+//app.MapControllers(); // 网关没有自己的 API
 
 // 4. Ocelot（如果使用网关）
 await app.UseOcelot();   // 必须在 Authentication 之后

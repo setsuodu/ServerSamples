@@ -1,0 +1,70 @@
+name: Build & Push Docker Image
+
+# 关键！只监听 MicroService/MSA 目录
+on:
+  push:
+    branches: [ main ]  # 每次 push 到 main 分支 → 自动构建 Docker 镜像
+    tags: [ 'v*.*.*' ]  # 推送 tag 如 v1.0.0 时也触发
+    paths:
+      - 'MicroService/MSA/**'  # 只有 Server 下任何文件改动才触发
+      - '.github/workflows/**' # 允许修改 workflow 本身
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'MicroService/MSA/**'  # 这里需要是因为 pull_request 不是拉取整个项目，而是 只拉取变更的文件（增量）！如果拉取了 CLient 是不触发的
+  workflow_dispatch:           # 手动触发（可选）
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write    # 必须有这个权限才能推送到 GHCR
+
+    steps:
+      # 1. 拉取代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 必须！否则 git 命令无法获取 tag
+
+      # 2. 自定义镜像名（你自己定义）
+      - name: Set custom image name
+        id: image
+        run: |
+          # 自定义镜像名（小写 + 连字符）
+          CUSTOM_NAME="weather-api"  # 改成你想要的名字！
+          echo "name=$CUSTOM_NAME" >> $GITHUB_OUTPUT
+
+      # 3. 设置版本号（自动生成）
+      - name: Generate version
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=$(date +'%Y%m%d')-${GITHUB_SHA::8}
+          fi
+          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+
+      # 4. 登录 GHCR
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 5. 构建并推送镜像（使用自定义镜像名）
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Server/WebAPI/WebAPI     # Dockerfile 所在目录（相对根目录）
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ steps.image.outputs.name }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ steps.image.outputs.name }}:${{ steps.version.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/${{ steps.image.outputs.name }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.version.outputs.tag }}
