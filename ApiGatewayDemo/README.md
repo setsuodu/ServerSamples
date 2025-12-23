@@ -7,6 +7,7 @@
 	- .NET 9.0，HTTPS，Controller，（先不加容器支持，确保多项目调试正常）
 2. 模拟电商的产品/订单，做个简单代码，确保能调试请求。
 	ApiGatewayDemo.sln
+```
 ├── ProductService/
 │   ├── Controllers/ProductsController.cs
 │   ├── Program.cs
@@ -19,7 +20,8 @@
     ├── ocelot.json (路由配置)
     ├── Program.cs
     └── Properties/launchSettings.json (端口: 5000)
-3. 设置多项目启动
+```
+4. 设置多项目启动
 	- 默认是单项目启动，修改sln属性👉多个启动项目(M):
 | 项目  | 操作 | 调试目标 |
 |-------|-----|--------|
