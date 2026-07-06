@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApiGateway/ApiGateway.csproj" />
+    <Project Path="src/GameService/GameService.csproj" />
+    <Project Path="src/LeaderboardService/LeaderboardService.csproj" />
+    <Project Path="src/UserService/UserService.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
